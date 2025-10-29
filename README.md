@@ -69,23 +69,59 @@ EduScale-Full/
 
 ## ⚡ Inicio Rápido
 
-### 1. Clonar el repositorio
+### 🔄 Después de hacer `git pull` (IMPORTANTE)
+
+Si ya tenías el proyecto corriendo y acabas de hacer `git pull`:
 
 ```bash
+# 1. Ir a la carpeta del proyecto
+cd EduScale-Full
+
+# 2. Detener todos los contenedores
+docker-compose down
+
+# 3. (Opcional) Si hay problemas, limpiar volúmenes
+docker-compose down -v
+
+# 4. Reconstruir y levantar todo
+docker-compose up -d --build
+
+# 5. Esperar ~2 minutos que todo inicie
+# Puedes verificar con: docker ps
+```
+
+**Crear datos de prueba (solo la primera vez o después de `down -v`):**
+
+```bash
+# Usuario admin
+curl -X POST http://localhost:5001/api/auth/register -H "Content-Type: application/json" -d '{"email":"admin@universidad-x.edu","password":"Password123!","nombre":"Carlos","apellido":"Fernandez","tenant_id":"univ_x_001","rol":"admin"}'
+
+# Configuración del tenant
+curl -X POST http://localhost:5001/api/tenant-config -H "Content-Type: application/json" -d '{"tenant_id":"univ_x_001","institucion":{"nombre_completo":"Universidad X Nacional","nombre_corto":"Universidad X","tipo":"universidad_publica","pais":"Argentina","ciudad":"Buenos Aires"},"branding":{"colores":{"primario":"#1e40af","secundario":"#3b82f6","acento":"#60a5fa"}},"textos":{"bienvenida":{"titulo":"Bienvenido a Universidad X","subtitulo":"Sistema de Gestión de Admisiones","descripcion":"Gestiona las solicitudes de ingreso de manera eficiente"}},"dashboard":{"tabs_habilitadas":[{"id":"solicitudes","nombre":"Solicitudes","fase":"B - Admisión","fuente":"mongodb","habilitada":true,"icono":"file-text","orden":1,"endpoint":"/api/admission"},{"id":"inscritos","nombre":"Inscritos","fase":"C - Inscripción","fuente":"cassandra","habilitada":true,"icono":"check-circle","orden":2,"endpoint":"/api/enrollment"}]}}'
+```
+
+**Credenciales de login:**
+- Email: `admin@universidad-x.edu`
+- Password: `Password123!`
+
+---
+
+### 🆕 Primera vez clonando el proyecto
+
+```bash
+# 1. Clonar el repositorio
 git clone <url-del-repositorio>
 cd EduScale-Full
+
+# 2. Levantar todos los servicios
+docker-compose up -d --build
+
+# 3. Esperar ~2 minutos
+
+# 4. Crear datos de prueba (comandos de arriba)
 ```
 
-### 2. Levantar todos los servicios
-
-```bash
-docker-compose up --build
-```
-
-Este comando:
-- Construye las imágenes de frontend y backend
-- Levanta todos los contenedores (frontend, backend, Redis, MongoDB, Cassandra, Neo4j)
-- Crea las redes y volúmenes necesarios
+---
 
 ### 3. Acceder a la aplicación
 
@@ -105,6 +141,19 @@ Una vez que todos los servicios estén corriendo:
 
 ## 🔧 Comandos Útiles
 
+### Desarrollo Frontend/Backend
+
+```bash
+# Actualizar solo el frontend (cuando haces cambios en React)
+docker-compose up -d --build frontend
+
+# Actualizar solo el backend (cuando haces cambios en Node.js)
+docker-compose up -d --build backend
+
+# Actualizar ambos
+docker-compose up -d --build frontend backend
+```
+
 ### Levantar en segundo plano
 
 ```bash
@@ -120,6 +169,9 @@ docker-compose logs -f
 # Servicio específico
 docker-compose logs -f backend
 docker-compose logs -f frontend
+
+# Ver últimas 50 líneas
+docker logs eduscale-backend --tail 50
 ```
 
 ### Detener servicios
@@ -140,6 +192,13 @@ docker-compose down -v
 docker-compose up --build --force-recreate
 ```
 
+### Ver estado de contenedores
+
+```bash
+docker ps
+docker ps -a  # incluye detenidos
+```
+
 ---
 
 ## 📡 Endpoints de la API
@@ -151,6 +210,41 @@ GET /api/health
 ```
 
 Devuelve el estado de conexión de todas las bases de datos.
+
+### 🔐 Autenticación (MongoDB)
+
+```
+POST   /api/auth/login           # Login de administradores
+POST   /api/auth/register        # Registrar usuario (testing)
+GET    /api/tenant-config/:id    # Obtener configuración del tenant (requiere auth)
+```
+
+**Ejemplo de login:**
+```bash
+curl -X POST http://localhost:5001/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@universidad-x.edu","password":"Password123!"}'
+```
+
+Respuesta:
+```json
+{
+  "token": "eyJhbGc...",
+  "user": {
+    "id": "...",
+    "email": "admin@universidad-x.edu",
+    "nombre": "Carlos",
+    "apellido": "Fernandez",
+    "tenant_id": "univ_x_001",
+    "rol": "admin"
+  }
+}
+```
+
+**Endpoints protegidos** requieren header:
+```
+Authorization: Bearer <token>
+```
 
 ### Fase A - Prospección (Redis)
 
@@ -329,17 +423,25 @@ docker-compose up --build
 
 ### Frontend
 - React 18
-- React Router
+- React Router DOM 6
 - Axios
-- Nginx
+- React Context API (autenticación)
+- Nginx (producción)
 
 ### Backend
 - Node.js 18
 - Express
-- Mongoose (MongoDB)
-- cassandra-driver
-- redis
-- neo4j-driver
+- **Autenticación:**
+  - jsonwebtoken (JWT)
+  - bcryptjs (hashing de contraseñas)
+- **Bases de datos:**
+  - Mongoose (MongoDB)
+  - cassandra-driver
+  - redis
+  - neo4j-driver
+- Helmet (seguridad)
+- Morgan (logging)
+- CORS
 
 ### Bases de Datos
 - MongoDB 7.0
