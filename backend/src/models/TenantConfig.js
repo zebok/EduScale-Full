@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const tenantConfigSchema = new mongoose.Schema({
-  tenant_id: {
+  institution_id: {
     type: String,
     required: true,
     unique: true,

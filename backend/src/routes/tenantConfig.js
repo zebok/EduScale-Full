@@ -3,7 +3,7 @@ const router = express.Router();
 const TenantConfig = require('../models/TenantConfig');
 const authMiddleware = require('../middleware/authMiddleware');
 
-// GET /api/tenant-config/:tenant_id - Obtener configuración de un tenant
+// GET /api/tenant-config/:tenant_id - Obtener configuración de un tenant (tenant_id == institution_id)
 // Protegido: requiere autenticación
 router.get('/:tenant_id', authMiddleware, async (req, res) => {
   try {
@@ -17,8 +17,8 @@ router.get('/:tenant_id', authMiddleware, async (req, res) => {
       });
     }
 
-    // Buscar configuración del tenant
-    const config = await TenantConfig.findOne({ tenant_id });
+    // Buscar configuración del tenant usando institution_id en la colección
+    const config = await TenantConfig.findOne({ institution_id: tenant_id });
 
     if (!config) {
       return res.status(404).json({
@@ -43,17 +43,25 @@ router.post('/', async (req, res) => {
   try {
     const configData = req.body;
 
+    // Permitir ambos nombres de campo por compatibilidad
+    const institution_id = configData.institution_id || configData.tenant_id;
+    if (!institution_id) {
+      return res.status(400).json({
+        error: 'Falta institution_id'
+      });
+    }
+
     // Verificar que no exista ya un tenant con ese ID
-    const existing = await TenantConfig.findOne({ tenant_id: configData.tenant_id });
+    const existing = await TenantConfig.findOne({ institution_id });
 
     if (existing) {
       return res.status(409).json({
-        error: 'Ya existe una configuración para este tenant_id'
+        error: 'Ya existe una configuración para esta institution_id'
       });
     }
 
     // Crear nueva configuración
-    const newConfig = new TenantConfig(configData);
+    const newConfig = new TenantConfig({ ...configData, institution_id });
     await newConfig.save();
 
     res.status(201).json({

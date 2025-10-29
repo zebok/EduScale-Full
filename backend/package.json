@@ -5,9 +5,15 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "seed:tenant": "node src/seeds/seedTenantConfig.js",
+    "start:with-seed": "node src/seeds/seedTenantConfig.js && node src/index.js"
   },
-  "keywords": ["eduscale", "admissions", "saas"],
+  "keywords": [
+    "eduscale",
+    "admissions",
+    "saas"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
