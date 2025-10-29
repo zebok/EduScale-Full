@@ -2,8 +2,10 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
+import Home from './pages/Home';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import ApplicationForm from './pages/ApplicationForm';
 import Prospection from './components/Prospection';
 import Admission from './components/Admission';
 import Enrollment from './components/Enrollment';
@@ -15,6 +17,8 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/application-form" element={<ApplicationForm />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={
             <PrivateRoute>
@@ -41,7 +45,6 @@ function App() {
               <Relations />
             </PrivateRoute>
           } />
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </Router>
     </AuthProvider>

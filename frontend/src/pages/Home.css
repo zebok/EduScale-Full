@@ -1,0 +1,109 @@
+.home {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.5rem;
+  gap: 3rem;
+  background: linear-gradient(160deg, #f4f7ff 0%, #eef1ff 45%, #ffffff 100%);
+}
+
+.home-hero {
+  max-width: 720px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2.5rem 2rem;
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(102, 126, 234, 0.18);
+  backdrop-filter: blur(6px);
+}
+
+.home-hero h1 {
+  font-size: 2.75rem;
+  color: #2e2f5b;
+  margin-bottom: 1rem;
+}
+
+.home-hero p {
+  font-size: 1.2rem;
+  color: #464875;
+  line-height: 1.6;
+}
+
+.home-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+  width: 100%;
+  max-width: 960px;
+}
+
+.home-card {
+  background: white;
+  padding: 2.25rem 2rem;
+  border-radius: 20px;
+  box-shadow: 0 16px 32px rgba(102, 126, 234, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  border: 1px solid rgba(118, 75, 162, 0.08);
+}
+
+.home-card h2 {
+  font-size: 1.6rem;
+  color: #2e2f5b;
+  margin: 0;
+}
+
+.home-card p {
+  color: #5a5d8a;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.home-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 1.5rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+  box-shadow: 0 12px 24px rgba(118, 75, 162, 0.25);
+}
+
+.home-button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+  box-shadow: 0 16px 32px rgba(118, 75, 162, 0.38);
+}
+
+.home-button--secondary {
+  background: transparent;
+  color: #667eea;
+  border: 2px solid rgba(102, 126, 234, 0.4);
+  box-shadow: none;
+}
+
+.home-button--secondary:hover {
+  background: rgba(102, 126, 234, 0.08);
+  box-shadow: none;
+}
+
+@media (max-width: 768px) {
+  .home {
+    padding: 3rem 1.25rem;
+  }
+
+  .home-hero h1 {
+    font-size: 2.2rem;
+  }
+
+  .home-hero p {
+    font-size: 1.05rem;
+  }
+}
