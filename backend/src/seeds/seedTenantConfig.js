@@ -2,6 +2,8 @@ const { connectMongoDB, mongoose } = require('../config/mongodb');
 const TenantConfig = require('../models/TenantConfig');
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const path = require('path');
 
 const rawTenantConfig = {
     institution_id: 'universidad-catolica-argentina',
@@ -296,42 +298,77 @@ function mapRawToSchema(raw) {
     return mapped;
 }
 
+function deriveAdminFor(raw) {
+    const id = raw.institution_id;
+    const short = (raw.institution?.short_name || id)
+        .replace(/\s+/g, '')
+        .replace(/[^A-Za-z0-9]/g, '');
+    const suffix = short.toUpperCase().slice(0, 6) || 'ADMIN';
+    const email = `admin.${id}@eduscale.com`;
+    const password = process.env.SEED_ADMIN_PASSWORD || `Admin${suffix}123`;
+    const apellido = suffix;
+    return { email, password, apellido };
+}
+
+async function upsertOne(raw) {
+    const doc = mapRawToSchema(raw);
+
+    const result = await TenantConfig.updateOne(
+        { institution_id: doc.institution_id },
+        { $set: doc },
+        { upsert: true }
+    );
+    console.log(`Upserted tenant: ${doc.institution_id}`, JSON.stringify(result));
+
+    // Verify
+    const saved = await TenantConfig.findOne({ institution_id: doc.institution_id });
+    if (!saved) throw new Error(`Failed to save tenant ${doc.institution_id}`);
+
+    // Ensure a default admin user exists for this tenant
+    const { email, password, apellido } = deriveAdminFor(raw);
+    const existingUser = await User.findOne({ email });
+    if (!existingUser) {
+        const hashed = await bcrypt.hash(password, 10);
+        const newUser = new User({
+            email,
+            password: hashed,
+            nombre: 'Admin',
+            apellido,
+            tenant_id: doc.institution_id,
+            rol: 'admin'
+        });
+        await newUser.save();
+        console.log(`Created admin user for ${doc.institution_id}: ${email} / ${password}`);
+    } else {
+        console.log(`Admin user already exists for ${doc.institution_id}: ${email}`);
+    }
+}
+
 async function run() {
     try {
         await connectMongoDB();
 
-        const doc = mapRawToSchema(rawTenantConfig);
-
-        const result = await TenantConfig.updateOne(
-            { institution_id: doc.institution_id },
-            { $set: doc },
-            { upsert: true }
-        );
-
-        console.log('TenantConfig upsert result:', JSON.stringify(result, null, 2));
-
-        // Verify
-        const saved = await TenantConfig.findOne({ institution_id: doc.institution_id });
-        console.log('Saved TenantConfig institution_id:', saved?.institution_id);
-
-        // Ensure a default admin user exists for this tenant (dev convenience)
-        const defaultEmail = 'admin.uca@eduscale.com';
-        const existingUser = await User.findOne({ email: defaultEmail });
-        if (!existingUser) {
-            const password = 'AdminUCA123';
-            const hashed = await bcrypt.hash(password, 10);
-            const newUser = new User({
-                email: defaultEmail,
-                password: hashed,
-                nombre: 'Admin',
-                apellido: 'UCA',
-                tenant_id: doc.institution_id,
-                rol: 'admin'
-            });
-            await newUser.save();
-            console.log(`Created default admin user: ${defaultEmail} / ${password}`);
+        // Load list from file if present; fallback to single rawTenantConfig
+        const filePath = process.env.SEED_TENANTS_FILE || path.join(__dirname, 'tenants.json');
+        let tenants = [];
+        if (fs.existsSync(filePath)) {
+            const content = fs.readFileSync(filePath, 'utf8');
+            tenants = JSON.parse(content);
+            if (!Array.isArray(tenants)) {
+                throw new Error('tenants.json must contain a JSON array');
+            }
+            console.log(`Seeding ${tenants.length} tenants from ${filePath}`);
         } else {
-            console.log('Default admin user already exists:', defaultEmail);
+            tenants = [rawTenantConfig];
+            console.log('Seeding single tenant from built-in config');
+        }
+
+        for (const raw of tenants) {
+            try {
+                await upsertOne(raw);
+            } catch (e) {
+                console.error('Error seeding tenant', raw?.institution_id, e);
+            }
         }
 
     } catch (err) {

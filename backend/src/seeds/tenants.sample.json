@@ -1,0 +1,93 @@
+[
+    {
+        "institution_id": "universidad-catolica-argentina",
+        "status": "active",
+        "institution": {
+            "name": "Universidad Católica Argentina",
+            "short_name": "UCA",
+            "type": "universidad_privada",
+            "country": "Argentina",
+            "city": "Buenos Aires",
+            "province": "CABA",
+            "founded_year": 1958
+        },
+        "contact": {
+            "address": "Alicia Moreau de Justo 1300, C1107 CABA",
+            "email": "admisiones@uca.edu.ar",
+            "phone": "+54 11 4338-0600",
+            "website": "https://www.uca.edu.ar"
+        },
+        "domain": "uca.eduscale.com",
+        "branding": {
+            "theme": {
+                "primary_color": "#8B0000",
+                "secondary_color": "#FFD700",
+                "accent_color": "#B22222",
+                "font_family": "Merriweather"
+            },
+            "logo_url": "https://via.placeholder.com/200x80?text=UCA"
+        },
+        "texts": {
+            "welcome": {
+                "title": "Bienvenido a la UCA",
+                "subtitle": "Admisiones 2025",
+                "description": "Formación integral con valores cristianos",
+                "footer_text": "UCA - In Conscientia et Veritate"
+            }
+        },
+        "settings": {
+            "admission_fee": 12000,
+            "enable_scholarship": true,
+            "max_applicants_per_year": 8000,
+            "require_entrance_exam": false,
+            "academic_year_start": "03-01",
+            "enrollment_periods": [
+                {
+                    "name": "Primer Cuatrimestre",
+                    "start": "11-01",
+                    "end": "02-28"
+                },
+                {
+                    "name": "Segundo Cuatrimestre",
+                    "start": "05-01",
+                    "end": "07-15"
+                }
+            ]
+        },
+        "careers": [],
+        "dashboard": {
+            "tabs_enabled": [
+                {
+                    "id": "prospection",
+                    "name": "Consultas",
+                    "phase": "A - Prospección",
+                    "source": "redis",
+                    "enabled": true,
+                    "icon": "user-plus",
+                    "order": 1,
+                    "endpoint": "/api/prospection"
+                },
+                {
+                    "id": "admission",
+                    "name": "Solicitudes",
+                    "phase": "B - Admisión",
+                    "source": "mongodb",
+                    "enabled": true,
+                    "icon": "file-text",
+                    "order": 2,
+                    "endpoint": "/api/admission"
+                },
+                {
+                    "id": "enrollment",
+                    "name": "Inscritos",
+                    "phase": "C - Inscripción",
+                    "source": "cassandra",
+                    "enabled": true,
+                    "icon": "check-circle",
+                    "order": 3,
+                    "endpoint": "/api/enrollment"
+                }
+            ]
+        }
+    }
+]
