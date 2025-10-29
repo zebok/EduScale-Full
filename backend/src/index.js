@@ -11,6 +11,8 @@ const redisConfig = require('./config/redis');
 const neo4jConfig = require('./config/neo4j');
 
 // Import routes
+const authRoutes = require('./routes/auth');
+const tenantConfigRoutes = require('./routes/tenantConfig');
 const prospectionRoutes = require('./routes/prospection');
 const admissionRoutes = require('./routes/admission');
 const enrollmentRoutes = require('./routes/enrollment');
@@ -81,6 +83,8 @@ app.get('/api/health', async (req, res) => {
 });
 
 // Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/tenant-config', tenantConfigRoutes);
 app.use('/api/prospection', prospectionRoutes);
 app.use('/api/admission', admissionRoutes);
 app.use('/api/enrollment', enrollmentRoutes);
