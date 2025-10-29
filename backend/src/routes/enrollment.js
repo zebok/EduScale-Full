@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { cassandraClient } = require('../config/cassandra');
+const cassandraConfig = require('../config/cassandra');
 const cassandra = require('cassandra-driver');
 
 // POST: Registrar inscripción (Fase C - Inmutable)
@@ -37,7 +37,7 @@ router.post('/', async (req, res) => {
       fechaInscripcion
     ];
 
-    await cassandraClient.execute(query, params, { prepare: true });
+    await cassandraConfig.cassandraClient.execute(query, params, { prepare: true });
 
     res.status(201).json({
       message: 'Inscripción registrada correctamente (inmutable)',
@@ -67,7 +67,7 @@ router.get('/institucion/:institucion', async (req, res) => {
       WHERE institucion = ?
     `;
 
-    const result = await cassandraClient.execute(query, [institucion], { prepare: true });
+    const result = await cassandraConfig.cassandraClient.execute(query, [institucion], { prepare: true });
 
     const inscripciones = result.rows.map(row => ({
       institucion: row.institucion,
@@ -97,7 +97,7 @@ router.get('/', async (req, res) => {
     // Este endpoint es solo para demostración
     const query = `SELECT * FROM inscripciones LIMIT 100`;
 
-    const result = await cassandraClient.execute(query);
+    const result = await cassandraConfig.cassandraClient.execute(query);
 
     const inscripciones = result.rows.map(row => ({
       institucion: row.institucion,
@@ -130,7 +130,7 @@ router.get('/institucion/:institucion/email/:email', async (req, res) => {
       WHERE institucion = ? AND email = ?
     `;
 
-    const result = await cassandraClient.execute(query, [institucion, email], { prepare: true });
+    const result = await cassandraConfig.cassandraClient.execute(query, [institucion, email], { prepare: true });
 
     const inscripciones = result.rows.map(row => ({
       institucion: row.institucion,

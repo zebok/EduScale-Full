@@ -63,7 +63,7 @@ EduScale-Full/
 - **Docker** instalado (v20.10 o superior)
 - **Docker Compose** instalado (v2.0 o superior)
 - Al menos **4GB de RAM** disponibles para los contenedores
-- Puertos disponibles: `3000`, `5000`, `6379`, `7474`, `7687`, `9042`, `27017`
+- Puertos disponibles: `3000`, `5001`, `6380`, `7475`, `7688`, `9043`, `27018`
 
 ---
 
@@ -92,8 +92,14 @@ Este comando:
 Una vez que todos los servicios estén corriendo:
 
 - **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:5000
-- **Neo4j Browser**: http://localhost:7474 (usuario: `neo4j`, contraseña: `eduscale123`)
+- **Backend API**: http://localhost:5001
+- **Neo4j Browser**: http://localhost:7475 (usuario: `neo4j`, contraseña: `eduscale123`)
+
+**Puertos de las bases de datos:**
+- **MongoDB**: localhost:27018
+- **Redis**: localhost:6380
+- **Cassandra**: localhost:9043
+- **Neo4j Bolt**: localhost:7688
 
 ---
 

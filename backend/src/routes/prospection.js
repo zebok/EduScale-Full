@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { redisClient } = require('../config/redis');
+const redisConfig = require('../config/redis');
 const rateLimit = require('express-rate-limit');
 
 // Rate limiting middleware
@@ -20,7 +20,7 @@ router.post('/', limiter, async (req, res) => {
     }
 
     // Verificar si el email ya está registrado (validación de duplicados)
-    const exists = await redisClient.get(`prospecto:${email}`);
+    const exists = await redisConfig.redisConfig.redisClient.get(`prospecto:${email}`);
 
     if (exists) {
       return res.status(409).json({
@@ -40,14 +40,14 @@ router.post('/', limiter, async (req, res) => {
     };
 
     // Guardar en Redis con TTL de 30 días (2592000 segundos)
-    await redisClient.setEx(
+    await redisConfig.redisClient.setEx(
       `prospecto:${email}`,
       2592000,
       JSON.stringify(prospectoData)
     );
 
     // Incrementar contador de prospectos
-    await redisClient.incr('contador:prospectos');
+    await redisConfig.redisClient.incr('contador:prospectos');
 
     res.status(201).json({
       message: 'Interés registrado correctamente',
@@ -64,7 +64,7 @@ router.get('/:email', async (req, res) => {
   try {
     const { email } = req.params;
 
-    const prospectoData = await redisClient.get(`prospecto:${email}`);
+    const prospectoData = await redisConfig.redisClient.get(`prospecto:${email}`);
 
     if (!prospectoData) {
       return res.status(404).json({ error: 'Prospecto no encontrado' });
@@ -82,7 +82,7 @@ router.get('/:email', async (req, res) => {
 // GET: Obtener estadísticas
 router.get('/stats/total', async (req, res) => {
   try {
-    const total = await redisClient.get('contador:prospectos') || '0';
+    const total = await redisConfig.redisClient.get('contador:prospectos') || '0';
 
     res.json({
       total_prospectos: parseInt(total)

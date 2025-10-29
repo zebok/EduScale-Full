@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { neo4jDriver } = require('../config/neo4j');
+const neo4jConfig = require('../config/neo4j');
 
 // POST: Crear relación entre estudiante, institución y programa
 router.post('/', async (req, res) => {
-  const session = neo4jDriver.session();
+  const session = neo4jConfig.neo4jDriver.session();
 
   try {
     const { email_estudiante, institucion, programa } = req.body;
@@ -50,7 +50,7 @@ router.post('/', async (req, res) => {
 
 // GET: Obtener relaciones de un estudiante
 router.get('/:email', async (req, res) => {
-  const session = neo4jDriver.session();
+  const session = neo4jConfig.neo4jDriver.session();
 
   try {
     const { email } = req.params;
@@ -83,7 +83,7 @@ router.get('/:email', async (req, res) => {
 
 // GET: Obtener todos los estudiantes de una institución
 router.get('/institucion/:nombre', async (req, res) => {
-  const session = neo4jDriver.session();
+  const session = neo4jConfig.neo4jDriver.session();
 
   try {
     const { nombre } = req.params;
@@ -114,7 +114,7 @@ router.get('/institucion/:nombre', async (req, res) => {
 
 // GET: Obtener programas más populares
 router.get('/stats/programas-populares', async (req, res) => {
-  const session = neo4jDriver.session();
+  const session = neo4jConfig.neo4jDriver.session();
 
   try {
     const query = `
@@ -144,7 +144,7 @@ router.get('/stats/programas-populares', async (req, res) => {
 
 // GET: Obtener todas las instituciones
 router.get('/stats/instituciones', async (req, res) => {
-  const session = neo4jDriver.session();
+  const session = neo4jConfig.neo4jDriver.session();
 
   try {
     const query = `

@@ -5,10 +5,10 @@ const morgan = require('morgan');
 require('dotenv').config();
 
 // Import database configurations
-const { connectMongoDB, mongoose } = require('./config/mongodb');
-const { connectCassandra, cassandraClient } = require('./config/cassandra');
-const { connectRedis, redisClient } = require('./config/redis');
-const { connectNeo4j, neo4jDriver } = require('./config/neo4j');
+const mongoConfig = require('./config/mongodb');
+const cassandraConfig = require('./config/cassandra');
+const redisConfig = require('./config/redis');
+const neo4jConfig = require('./config/neo4j');
 
 // Import routes
 const prospectionRoutes = require('./routes/prospection');
@@ -37,7 +37,7 @@ app.get('/api/health', async (req, res) => {
 
   try {
     // Check MongoDB
-    if (mongoose.connection.readyState === 1) {
+    if (mongoConfig.mongoose.connection.readyState === 1) {
       status.mongodb = true;
     }
   } catch (error) {
@@ -46,7 +46,8 @@ app.get('/api/health', async (req, res) => {
 
   try {
     // Check Cassandra
-    if (cassandraClient && cassandraClient.getState() && cassandraClient.getState().getConnectedHosts().length > 0) {
+    const client = cassandraConfig.cassandraClient;
+    if (client && client.getState && client.getState().getConnectedHosts().length > 0) {
       status.cassandra = true;
     }
   } catch (error) {
@@ -55,7 +56,8 @@ app.get('/api/health', async (req, res) => {
 
   try {
     // Check Redis
-    if (redisClient && redisClient.isOpen) {
+    const client = redisConfig.redisClient;
+    if (client && client.isOpen) {
       status.redis = true;
     }
   } catch (error) {
@@ -64,10 +66,13 @@ app.get('/api/health', async (req, res) => {
 
   try {
     // Check Neo4j
-    const session = neo4jDriver.session();
-    await session.run('RETURN 1');
-    await session.close();
-    status.neo4j = true;
+    const driver = neo4jConfig.neo4jDriver;
+    if (driver) {
+      const session = driver.session();
+      await session.run('RETURN 1');
+      await session.close();
+      status.neo4j = true;
+    }
   } catch (error) {
     console.error('Neo4j health check failed:', error);
   }
@@ -110,10 +115,10 @@ async function startServer() {
     console.log('🚀 Iniciando EduScale Backend...');
 
     // Connect to databases
-    await connectMongoDB();
-    await connectCassandra();
-    await connectRedis();
-    await connectNeo4j();
+    await mongoConfig.connectMongoDB();
+    await cassandraConfig.connectCassandra();
+    await redisConfig.connectRedis();
+    await neo4jConfig.connectNeo4j();
 
     // Start server
     app.listen(PORT, () => {
@@ -131,10 +136,10 @@ process.on('SIGINT', async () => {
   console.log('\n⚠️  Cerrando conexiones...');
 
   try {
-    await mongoose.connection.close();
-    await cassandraClient.shutdown();
-    await redisClient.quit();
-    await neo4jDriver.close();
+    await mongoConfig.mongoose.connection.close();
+    await cassandraConfig.cassandraClient.shutdown();
+    await redisConfig.redisClient.quit();
+    await neo4jConfig.neo4jDriver.close();
     console.log('✓ Conexiones cerradas correctamente');
     process.exit(0);
   } catch (error) {

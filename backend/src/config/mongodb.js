@@ -4,10 +4,7 @@ const connectMongoDB = async () => {
   try {
     const mongoURI = process.env.MONGO_URI || 'mongodb://mongo:27017/eduscale';
 
-    await mongoose.connect(mongoURI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(mongoURI);
 
     console.log('✓ MongoDB conectado correctamente');
   } catch (error) {
