@@ -109,18 +109,3 @@ ON enrollments (admission_status);
 -- Index by academic_year for year-based queries
 CREATE INDEX IF NOT EXISTS idx_academic_year
 ON enrollments (academic_year);
-
--- ============================================
--- MATERIALIZED VIEW: Enrollments by Status
--- For efficient queries by institution and status
--- ============================================
-
-CREATE MATERIALIZED VIEW IF NOT EXISTS enrollments_by_status AS
-    SELECT institution_id, enrollment_status, email, career_id,
-           nombre_completo, career_name, created_at, updated_at
-    FROM enrollments
-    WHERE institution_id IS NOT NULL
-      AND enrollment_status IS NOT NULL
-      AND email IS NOT NULL
-      AND career_id IS NOT NULL
-    PRIMARY KEY ((institution_id, enrollment_status), email, career_id);
