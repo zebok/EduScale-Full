@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './MoreInfo.css';
-import categoriesData from '../data/categories.json';
 
 function CareersModal({ visible, onClose, careers, institutionName, institucionId }) {
   if (!visible) return null;
@@ -99,10 +98,10 @@ export default function MoreInfo() {
 
   // Categories derived from careers.category (use the 'category' field from tenant careers)
   // Fallback to static list extracted from init-tenants.js if backend does not expose category
-  // Prefer explicit career category fields; do NOT use faculty as a category.
-  const derivedCategories = Array.from(new Set(Object.values(careersMap).flat().map(c => (c.category || c.categoria)).filter(Boolean))).sort((a,b)=>a.localeCompare(b, 'es'));
-  const fallbackCategories = Array.from(new Set(categoriesData)).sort((a,b)=>a.localeCompare(b, 'es'));
-  const categories = derivedCategories.length > 0 ? derivedCategories : fallbackCategories;
+  // Prefer the Spanish 'categoria' field; fall back to 'category' if present.
+  // Do NOT use faculty as a category.
+  const derivedCategories = Array.from(new Set(Object.values(careersMap).flat().map(c => (c.categoria || c.category)).filter(Boolean))).sort((a,b)=>a.localeCompare(b, 'es'));
+  const categories = derivedCategories;
 
   const durations = Array.from(new Set(Object.values(careersMap).flat().map(c => c.duracion_años).filter(v => v != null))).sort((a,b)=>a-b);
 
