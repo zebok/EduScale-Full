@@ -20,7 +20,7 @@ router.post('/', limiter, async (req, res) => {
     }
 
     // Verificar si el email ya está registrado (validación de duplicados)
-    const exists = await redisConfig.redisConfig.redisClient.get(`prospecto:${email}`);
+    const exists = await redisConfig.redisClient.get(`prospecto:${email}`);
 
     if (exists) {
       return res.status(409).json({
