@@ -22,8 +22,8 @@ services:
     networks:
       - eduscale-network
     depends_on:
-      cassandra:
-        condition: service_healthy
+      cassandra-init:
+        condition: service_completed_successfully
       mongo:
         condition: service_started
       redis:
@@ -75,6 +75,27 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+
+  # Cassandra Initialization - Runs init script
+  cassandra-init:
+    image: cassandra:4.1
+    container_name: eduscale-cassandra-init
+    networks:
+      - eduscale-network
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    volumes:
+      - ./cassandra-init:/cassandra-init
+    command: >
+      bash -c "
+        echo 'Waiting for Cassandra to be ready...';
+        sleep 10;
+        echo 'Executing Cassandra initialization script...';
+        cqlsh cassandra -f /cassandra-init/init-keyspace.cql;
+        echo 'Cassandra initialization completed!';
+      "
+    restart: "no"
 
   # Redis - Fase A: Interés/Prospección (validación, rate limiting)
   redis:

@@ -83,7 +83,8 @@ router.post('/', limiter, async (req, res) => {
     }
 
     // Verificar si el email ya está registrado (validación de duplicados)
-    const exists = await redisConfig.redisClient.get(`prospecto:${email}`);
+    const redisKey = `prospection:${institucionId}:${email}:${carreraId}`;
+    const exists = await redisConfig.redisClient.get(redisKey);
 
     if (exists) {
       return res.status(409).json({
@@ -104,9 +105,15 @@ router.post('/', limiter, async (req, res) => {
     }
 
     // Guardar datos del prospecto en Redis (Fase A)
+    // Formato compatible con worker de migración
     const prospectoData = {
       email,
       nombreCompleto,
+      institucionId: institucion.institution_id,
+      carreraId: carrera.career_id,
+      timestamp: new Date().toISOString(),
+      source: 'web',
+      // Metadata adicional para reportes
       institucion: {
         id: institucion._id,
         institution_id: institucion.institution_id,
@@ -120,14 +127,14 @@ router.post('/', limiter, async (req, res) => {
         codigo: carrera.code,
         facultad: carrera.faculty
       },
-      fecha_registro: new Date().toISOString(),
       estado: 'interesado',
       fase: 'A - Prospección'
     };
 
     // Guardar en Redis con TTL de 2 horas (7200 segundos)
+    // Key format: prospection:{institucionId}:{email}:{carreraId}
     await redisConfig.redisClient.setEx(
-      `prospecto:${email}`,
+      redisKey,
       7200,
       JSON.stringify(prospectoData)
     );
