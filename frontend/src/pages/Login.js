@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Login.css';
 
@@ -30,6 +30,9 @@ function Login() {
 
   return (
     <div className="login-container">
+      <div className="login-topbar">
+        <Link to="/" className="back-home">← Volver al inicio</Link>
+      </div>
       <div className="login-card">
         <div className="login-header">
           <h1>🎓 EduScale</h1>
