@@ -24,6 +24,30 @@ async function run() {
     try {
         await connectMongoDB();
 
+        // 1. Crear usuario super-admin del Ministerio
+        console.log('✓ Creating super-admin user (Ministerio)...');
+        const ministerioEmail = 'ministerio@eduscale.edu.ar';
+        const existingSuperAdmin = await User.findOne({ email: ministerioEmail });
+
+        if (!existingSuperAdmin) {
+            const ministerioPassword = process.env.SUPER_ADMIN_PASSWORD || 'Ministerio2025!';
+            const hashedMinisterio = await bcrypt.hash(ministerioPassword, 10);
+            const superAdmin = new User({
+                email: ministerioEmail,
+                password: hashedMinisterio,
+                nombre: 'Ministerio',
+                apellido: 'Educación',
+                tenant_id: 'ministerio',
+                rol: 'super_admin',
+                permisos: ['ver_todas_universidades', 'ver_reportes', 'administrar_sistema']
+            });
+            await superAdmin.save();
+            console.log(`  • Created super-admin: ${ministerioEmail} / ${ministerioPassword}`);
+        } else {
+            console.log(`  • Super-admin already exists: ${ministerioEmail}`);
+        }
+
+        // 2. Crear admins para cada universidad
         console.log('✓ Ensuring admin users exist for all tenants in DB...');
         const allTenants = await TenantConfig.find({}, { institution_id: 1, institution: 1 });
 

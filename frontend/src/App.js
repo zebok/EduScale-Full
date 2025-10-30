@@ -5,6 +5,7 @@ import PrivateRoute from './components/PrivateRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import MinisterioDashboard from './pages/MinisterioDashboard';
 import ApplicationForm from './pages/ApplicationForm';
 import Prospection from './components/Prospection';
 import Admission from './components/Admission';
@@ -25,6 +26,11 @@ function App() {
           <Route path="/dashboard" element={
             <PrivateRoute>
               <Dashboard />
+            </PrivateRoute>
+          } />
+          <Route path="/ministerio" element={
+            <PrivateRoute>
+              <MinisterioDashboard />
             </PrivateRoute>
           } />
           <Route path="/api/prospection" element={

@@ -20,7 +20,12 @@ function Login() {
     const result = await login(email, password);
 
     if (result.success) {
-      navigate('/dashboard');
+      // Redirigir según el rol del usuario
+      if (result.user.rol === 'super_admin') {
+        navigate('/ministerio');
+      } else {
+        navigate('/dashboard');
+      }
     } else {
       setError(result.message);
     }

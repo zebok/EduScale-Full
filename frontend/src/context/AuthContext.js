@@ -53,10 +53,12 @@ export const AuthProvider = ({ children }) => {
 
       setUser(userData);
 
-      // Cargar configuración del tenant
-      await loadTenantConfig(userData.tenant_id);
+      // Si es super_admin, no cargar configuración de tenant
+      if (userData.rol !== 'super_admin') {
+        await loadTenantConfig(userData.tenant_id);
+      }
 
-      return { success: true };
+      return { success: true, user: userData };
     } catch (error) {
       console.error('Error en login:', error);
       return {

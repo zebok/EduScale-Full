@@ -17,6 +17,7 @@ const prospectionRoutes = require('./routes/prospection');
 const admissionRoutes = require('./routes/admission');
 const enrollmentRoutes = require('./routes/enrollment');
 const relationsRoutes = require('./routes/relations');
+const ministerioRoutes = require('./routes/ministerio');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -89,6 +90,7 @@ app.use('/api/prospection', prospectionRoutes);
 app.use('/api/admission', admissionRoutes);
 app.use('/api/enrollment', enrollmentRoutes);
 app.use('/api/relations', relationsRoutes);
+app.use('/api/ministerio', ministerioRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
