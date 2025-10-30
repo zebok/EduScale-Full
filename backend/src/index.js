@@ -10,6 +10,9 @@ const cassandraConfig = require('./config/cassandra');
 const redisConfig = require('./config/redis');
 const neo4jConfig = require('./config/neo4j');
 
+// Import workers
+const redisToEnrollmentWorker = require('./workers/redisToEnrollmentWorker');
+
 // Import routes
 const authRoutes = require('./routes/auth');
 const tenantConfigRoutes = require('./routes/tenantConfig');
@@ -17,6 +20,7 @@ const prospectionRoutes = require('./routes/prospection');
 const admissionRoutes = require('./routes/admission');
 const enrollmentRoutes = require('./routes/enrollment');
 const relationsRoutes = require('./routes/relations');
+const workerRoutes = require('./routes/worker');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -89,6 +93,7 @@ app.use('/api/prospection', prospectionRoutes);
 app.use('/api/admission', admissionRoutes);
 app.use('/api/enrollment', enrollmentRoutes);
 app.use('/api/relations', relationsRoutes);
+app.use('/api/worker', workerRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -124,6 +129,10 @@ async function startServer() {
     await redisConfig.connectRedis();
     await neo4jConfig.connectNeo4j();
 
+    // Start workers
+    console.log('🔧 Starting background workers...');
+    redisToEnrollmentWorker.start();
+
     // Start server
     app.listen(PORT, () => {
       console.log(`✓ Servidor corriendo en puerto ${PORT}`);
@@ -140,6 +149,9 @@ process.on('SIGINT', async () => {
   console.log('\n⚠️  Cerrando conexiones...');
 
   try {
+    // Stop workers
+    redisToEnrollmentWorker.stop();
+
     await mongoConfig.mongoose.connection.close();
     await cassandraConfig.cassandraClient.shutdown();
     await redisConfig.redisClient.quit();
