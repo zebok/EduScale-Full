@@ -35,7 +35,7 @@ db.tenantconfigs.insertMany([
                 accent_color: "#004080",
                 font_family: "Roboto"
             },
-            logo_url: "https://via.placeholder.com/200x80?text=UBA"
+            logo_url: "https://upload.wikimedia.org/wikipedia/commons/a/a3/UBA.png"
         },
         texts: {
             welcome: {
@@ -144,7 +144,7 @@ db.tenantconfigs.insertMany([
                 accent_color: "#B22222",
                 font_family: "Merriweather"
             },
-            logo_url: "https://via.placeholder.com/200x80?text=UCA"
+            logo_url: "https://upload.wikimedia.org/wikipedia/commons/c/cb/Universidad_Cat%C3%B3lica_Argentina.png"
         },
         texts: {
             welcome: {
@@ -253,7 +253,7 @@ db.tenantconfigs.insertMany([
                 accent_color: "#FF6600",
                 font_family: "Open Sans"
             },
-            logo_url: "https://via.placeholder.com/200x80?text=ITBA"
+            logo_url: "https://centros-investigacion.s3.sa-east-1.amazonaws.com/wp-content/uploads/sites/14/2020/11/logo-itba-site.png"
         },
         texts: {
             welcome: {
@@ -337,7 +337,7 @@ db.tenantconfigs.insertMany([
                 accent_color: "#FF6B35",
                 font_family: "Lato"
             },
-            logo_url: "https://via.placeholder.com/200x80?text=UTN"
+            logo_url: "https://images.seeklogo.com/logo-png/14/2/universidad-tecnologica-nacional-logo-png_seeklogo-145804.png"
         },
         texts: {
             welcome: {
@@ -421,7 +421,7 @@ db.tenantconfigs.insertMany([
                 accent_color: "#F7941D",
                 font_family: "Montserrat"
             },
-            logo_url: "https://via.placeholder.com/200x80?text=UP"
+            logo_url: "https://images.seeklogo.com/logo-png/14/2/universidad-de-palermo-logo-png_seeklogo-145717.png"
         },
         texts: {
             welcome: {
@@ -506,7 +506,7 @@ db.tenantconfigs.insertMany([
                 accent_color: "#CD853F",
                 font_family: "Source Sans Pro"
             },
-            logo_url: "https://via.placeholder.com/200x80?text=UNLP"
+            logo_url: "https://upload.wikimedia.org/wikipedia/commons/7/74/UNLP_Logo_%28cropped%29.svg"
         },
         texts: {
             welcome: {
@@ -590,7 +590,7 @@ db.tenantconfigs.insertMany([
                 accent_color: "#F7931E",
                 font_family: "Raleway"
             },
-            logo_url: "https://via.placeholder.com/200x80?text=UADE"
+            logo_url: "https://www.institucionulloa.com.ar/wp-content/uploads/2020/05/logo_mesa-de-trabajo-1-copia.png"
         },
         texts: {
             welcome: {
@@ -675,7 +675,7 @@ db.tenantconfigs.insertMany([
                 accent_color: "#E84E0F",
                 font_family: "Nunito"
             },
-            logo_url: "https://via.placeholder.com/200x80?text=Austral"
+            logo_url: "https://www.austral.edu.ar/wp-content/uploads/2022/09/logo-footer.png?x65960&x65960"
         },
         texts: {
             welcome: {
@@ -759,7 +759,7 @@ db.tenantconfigs.insertMany([
                 accent_color: "#C0C0C0",
                 font_family: "Georgia"
             },
-            logo_url: "https://via.placeholder.com/200x80?text=UTDT"
+            logo_url: "https://www.helpargentina.org/images/default/ong/cuadrado_utdt-0155.png"
         },
         texts: {
             welcome: {
@@ -843,7 +843,7 @@ db.tenantconfigs.insertMany([
                 accent_color: "#9E1B32",
                 font_family: "Arial"
             },
-            logo_url: "https://via.placeholder.com/200x80?text=UNC"
+            logo_url: "https://upload.wikimedia.org/wikipedia/commons/c/c4/Escudo_UNC.png"
         },
         texts: {
             welcome: {
