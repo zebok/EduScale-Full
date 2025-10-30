@@ -18,6 +18,7 @@ const ApplicationForm = () => {
   const [loading, setLoading] = useState(false);
   const [loadingCarreras, setLoadingCarreras] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState(null);
 
   // Cargar instituciones al montar el componente
   useEffect(() => {
@@ -88,8 +89,17 @@ const ApplicationForm = () => {
         throw new Error(data.error || 'Error al enviar la solicitud');
       }
 
+      // Obtener nombre de la institución seleccionada
+      const institucionSeleccionada = instituciones.find(inst => inst.id === formData.institucionId);
+      const carreraSeleccionada = carreras.find(car => car.id === formData.carreraId);
+
       // Mostrar mensaje de éxito
-      alert(`¡Tu solicitud ha sido enviada exitosamente!\n\nTus datos estarán disponibles por ${data.ttl_horas} horas.\n\nTe contactaremos pronto a ${formData.email}`);
+      setSuccessMessage({
+        institucion: institucionSeleccionada?.nombre || 'la institución',
+        carrera: carreraSeleccionada?.nombre || 'la carrera',
+        email: formData.email,
+        ttl_horas: data.ttl_horas
+      });
 
       // Resetear formulario
       setFormData({
@@ -99,11 +109,11 @@ const ApplicationForm = () => {
         carreraId: ''
       });
       setCarreras([]);
+      setError('');
 
     } catch (error) {
       console.error('Error al enviar solicitud:', error);
       setError(error.message);
-      alert(`Error: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -117,14 +127,31 @@ const ApplicationForm = () => {
         </button>
         
         <h1>Solicitud de Inscripción</h1>
-        <p className="form-subtitle">
-          Completá el siguiente formulario para registrar tu interés en el programa de becas.
-          Tus datos estarán disponibles por 2 horas.
-        </p>
 
         {error && <div className="error-message">{error}</div>}
 
-        <form onSubmit={handleSubmit} className="application-form">
+        {successMessage && (
+          <div className="success-message">
+            <div className="success-icon">✓</div>
+            <h2>¡Registro Exitoso!</h2>
+            <p className="success-main-text">
+              Tu interés en <strong>{successMessage.carrera}</strong> ha sido registrado correctamente.
+            </p>
+            <p className="success-detail">
+              El comité de admisiones de <strong>{successMessage.institucion}</strong> evaluará tu solicitud
+              y se pondrá en contacto contigo a <strong>{successMessage.email}</strong>.
+            </p>
+            <button
+              onClick={() => setSuccessMessage(null)}
+              className="success-button"
+            >
+              Registrar otro interés
+            </button>
+          </div>
+        )}
+
+        {!successMessage && (
+          <form onSubmit={handleSubmit} className="application-form">
           <div className="form-group">
             <label htmlFor="nombreCompleto">Nombre Completo *</label>
             <input
@@ -202,6 +229,7 @@ const ApplicationForm = () => {
             {loading ? 'Enviando...' : 'Enviar solicitud'}
           </button>
         </form>
+        )}
       </div>
     </div>
   );

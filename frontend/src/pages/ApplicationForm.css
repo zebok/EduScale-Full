@@ -145,6 +145,105 @@
   margin-bottom: 1rem;
 }
 
+.success-message {
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  border: 3px solid #4caf50;
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  animation: slideDown 0.5s ease-out;
+  box-shadow: 0 8px 24px rgba(76, 175, 80, 0.25);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.success-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #4caf50, #66bb6a);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: bold;
+  margin: 0 auto 1.5rem;
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+  animation: scaleIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.success-message h2 {
+  color: #2e7d32;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.success-main-text {
+  font-size: 1.2rem;
+  color: #1b5e20;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.success-detail {
+  font-size: 1.05rem;
+  color: #2e7d32;
+  margin-bottom: 1rem;
+  line-height: 1.7;
+}
+
+.success-info {
+  font-size: 0.95rem;
+  color: #388e3c;
+  margin-bottom: 1.5rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 8px;
+}
+
+.success-button {
+  background: linear-gradient(135deg, #4caf50, #66bb6a);
+  color: white;
+  border: none;
+  padding: 1rem 2.5rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.success-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+  filter: brightness(1.1);
+}
+
+.success-button:active {
+  transform: translateY(0);
+}
+
 @media (max-width: 768px) {
   .application-form-card {
     padding: 2rem 1.5rem;
