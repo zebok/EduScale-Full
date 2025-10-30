@@ -1,61 +1,117 @@
 const cassandra = require('cassandra-driver');
+const fs = require('fs');
+const path = require('path');
 
-let cassandraClient;
+// Cassandra connection config
+const contactPoints = [process.env.CASSANDRA_HOST || 'cassandra'];
+const localDataCenter = process.env.CASSANDRA_DC || 'datacenter1';
+const keyspace = 'eduscale';
 
-const connectCassandra = async () => {
+// Create Cassandra client
+const client = new cassandra.Client({
+  contactPoints,
+  localDataCenter,
+  keyspace: 'system', // Connect to system keyspace first
+  protocolOptions: { port: 9042 }
+});
+
+let cassandraReady = false;
+
+/**
+ * Initialize Cassandra keyspace and tables
+ */
+async function initializeCassandra() {
   try {
-    const contactPoints = (process.env.CASSANDRA_CONTACT_POINTS || 'cassandra').split(',');
-    const keyspace = process.env.CASSANDRA_KEYSPACE || 'eduscale';
+    console.log('🔌 Connecting to Cassandra...');
+    await client.connect();
+    console.log('✓ Connected to Cassandra');
 
-    cassandraClient = new cassandra.Client({
-      contactPoints: contactPoints,
-      localDataCenter: 'datacenter1',
-      keyspace: 'system'
-    });
+    // Read initialization script
+    const initScriptPath = path.join(__dirname, '../../../cassandra-init/init-keyspace.cql');
 
-    await cassandraClient.connect();
+    if (!fs.existsSync(initScriptPath)) {
+      console.warn('⚠️  Cassandra init script not found. Skipping table creation.');
+      return;
+    }
 
-    // Crear keyspace si no existe
-    const createKeyspaceQuery = `
-      CREATE KEYSPACE IF NOT EXISTS ${keyspace}
-      WITH replication = {
-        'class': 'SimpleStrategy',
-        'replication_factor': 1
+    const initScript = fs.readFileSync(initScriptPath, 'utf8');
+
+    // Split script by semicolons and filter out comments and empty lines
+    const statements = initScript
+      .split(';')
+      .map(stmt => stmt.trim())
+      .filter(stmt => stmt.length > 0 && !stmt.startsWith('--'));
+
+    console.log('🚀 Initializing Cassandra keyspace and tables...');
+
+    // Execute each statement
+    for (const statement of statements) {
+      if (statement.toLowerCase().includes('describe')) {
+        continue; // Skip DESCRIBE statements
       }
-    `;
 
-    await cassandraClient.execute(createKeyspaceQuery);
-    console.log(`✓ Keyspace '${keyspace}' creado/verificado`);
+      try {
+        await client.execute(statement);
+      } catch (err) {
+        // Ignore errors for already existing objects
+        if (!err.message.includes('already exists') && !err.message.includes('Cannot add existing')) {
+          console.error(`Error executing statement: ${statement.substring(0, 100)}...`);
+          console.error(err.message);
+        }
+      }
+    }
 
-    // Cambiar al keyspace
-    await cassandraClient.execute(`USE ${keyspace}`);
+    // Switch to eduscale keyspace
+    await client.execute(`USE ${keyspace}`);
 
-    // Crear tabla de inscripciones si no existe
-    const createTableQuery = `
-      CREATE TABLE IF NOT EXISTS inscripciones (
-        institucion text,
-        email text,
-        id_inscripcion uuid,
-        nombre text,
-        apellido text,
-        programa text,
-        fecha_inscripcion timestamp,
-        PRIMARY KEY ((institucion), email, id_inscripcion)
-      ) WITH CLUSTERING ORDER BY (email ASC, id_inscripcion DESC)
-    `;
+    console.log('✓ Cassandra keyspace and tables initialized');
+    cassandraReady = true;
 
-    await cassandraClient.execute(createTableQuery);
-    console.log('✓ Tabla inscripciones creada/verificada');
-    console.log('✓ Cassandra conectado correctamente');
   } catch (error) {
-    console.error('❌ Error al conectar con Cassandra:', error);
+    console.error('❌ Error initializing Cassandra:', error);
     throw error;
   }
-};
+}
+
+/**
+ * Get Cassandra client (ensures it's initialized)
+ */
+async function getCassandraClient() {
+  if (!cassandraReady) {
+    await initializeCassandra();
+  }
+  return client;
+}
+
+/**
+ * Execute a CQL query
+ */
+async function executeQuery(query, params = [], options = {}) {
+  const cassandraClient = await getCassandraClient();
+  return cassandraClient.execute(query, params, options);
+}
+
+/**
+ * Shutdown Cassandra connection
+ */
+async function shutdown() {
+  if (client) {
+    await client.shutdown();
+    console.log('✓ Cassandra connection closed');
+  }
+}
+
+// Initialize on module load
+initializeCassandra().catch(err => {
+  console.error('Failed to initialize Cassandra:', err);
+});
 
 module.exports = {
-  connectCassandra,
-  get cassandraClient() {
-    return cassandraClient;
-  }
+  client,
+  cassandraClient: client, // Alias for compatibility
+  getCassandraClient,
+  executeQuery,
+  initializeCassandra,
+  connectCassandra: initializeCassandra, // Alias for compatibility
+  shutdown
 };

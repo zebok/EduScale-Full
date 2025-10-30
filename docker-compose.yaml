@@ -66,6 +66,7 @@ services:
       - eduscale-network
     volumes:
       - cassandra-data:/var/lib/cassandra
+      - ./cassandra-init:/docker-entrypoint-initdb.d
     environment:
       - CASSANDRA_CLUSTER_NAME=EduScaleCluster
       - CASSANDRA_DC=datacenter1
