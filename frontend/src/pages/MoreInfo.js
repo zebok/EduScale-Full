@@ -53,7 +53,7 @@ export default function MoreInfo() {
   const [careersMap, setCareersMap] = useState({}); // id -> careers array
   const [loading, setLoading] = useState(false);
 
-  const [filters, setFilters] = useState({ province: '', degreeType: '', duration: '' });
+  const [filters, setFilters] = useState({ province: '', degreeType: '', duration: '', category: '' });
   const [search, setSearch] = useState('');
   // Category select is always visible now
 
@@ -96,6 +96,9 @@ export default function MoreInfo() {
 
   const degreeTypes = Array.from(new Set(Object.values(careersMap).flat().map(c => c.modalidad || c.degree_type).filter(Boolean)));
 
+  // Categories derived from careers.facultad
+  const categories = Array.from(new Set(Object.values(careersMap).flat().map(c => c.facultad).filter(Boolean)));
+
   const durations = Array.from(new Set(Object.values(careersMap).flat().map(c => c.duracion_años).filter(v => v != null))).sort((a,b)=>a-b);
 
   function matchesFilters(inst) {
@@ -108,6 +111,10 @@ export default function MoreInfo() {
     if (filters.degreeType) {
       const any = careers.some(c => (c.modalidad || c.degree_type || '').toLowerCase() === filters.degreeType.toLowerCase());
       if (!any) return false;
+    }
+    if (filters.category) {
+      const anyCat = careers.some(c => (c.facultad || '').toLowerCase() === filters.category.toLowerCase());
+      if (!anyCat) return false;
     }
     if (filters.duration) {
       const any = careers.some(c => String(c.duracion_años) === String(filters.duration));
@@ -144,6 +151,10 @@ export default function MoreInfo() {
         <select value={filters.degreeType} onChange={e=>setFilters({...filters, degreeType: e.target.value})}>
           <option value="">Todas las modalidades</option>
           {degreeTypes.map(d => <option key={d} value={d}>{d}</option>)}
+        </select>
+        <select value={filters.category} onChange={e=>setFilters({...filters, category: e.target.value})}>
+          <option value="">Todas las categorías</option>
+          {categories.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
       </section>
 
