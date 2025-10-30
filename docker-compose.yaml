@@ -52,6 +52,7 @@ services:
       - eduscale-network
     volumes:
       - mongo-data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d
     environment:
       - MONGO_INITDB_DATABASE=eduscale
 
