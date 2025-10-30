@@ -138,16 +138,16 @@ export default function MoreInfo() {
           <option value="">Todas las provincias</option>
           {provinces.map(p => <option key={p} value={p}>{p}</option>)}
         </select>
+        <select value={filters.duration} onChange={e=>setFilters({...filters, duration: e.target.value})}>
+          <option value="">Cualquier duración</option>
+          {durations.map(d => <option key={d} value={d}>{d} años</option>)}
+        </select>
         {showCategory && (
           <select value={filters.degreeType} onChange={e=>setFilters({...filters, degreeType: e.target.value})}>
             <option value="">Todas las modalidades</option>
             {degreeTypes.map(d => <option key={d} value={d}>{d}</option>)}
           </select>
         )}
-        <select value={filters.duration} onChange={e=>setFilters({...filters, duration: e.target.value})}>
-          <option value="">Cualquier duración</option>
-          {durations.map(d => <option key={d} value={d}>{d} años</option>)}
-        </select>
       </section>
 
       <section className="mi-list">
