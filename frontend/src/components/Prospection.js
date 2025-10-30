@@ -1,140 +1,76 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 function Prospection() {
-  const [formData, setFormData] = useState({
-    email: '',
-    nombre: '',
-    apellido: '',
-    telefono: ''
-  });
-  const [message, setMessage] = useState({ text: '', type: '' });
-  const [loading, setLoading] = useState(false);
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [items, setItems] = useState([]);
+  const [total, setTotal] = useState(0);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage({ text: '', type: '' });
-
+  const fetchEnrollments = async () => {
     try {
-      const response = await fetch('/api/prospection', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setMessage({
-          text: data.message || '✓ Interés registrado correctamente',
-          type: 'success'
-        });
-        setFormData({ email: '', nombre: '', apellido: '', telefono: '' });
-      } else {
-        setMessage({
-          text: data.error || 'Error al registrar el interés',
-          type: 'error'
-        });
-      }
-    } catch (error) {
-      setMessage({
-        text: 'Error de conexión con el servidor',
-        type: 'error'
-      });
+      setLoading(true);
+      setError('');
+      const { data } = await axios.get(`${API_URL}/api/enrollment`);
+      setItems(data.enrollments || []);
+      setTotal(data.total || 0);
+    } catch (e) {
+      setError(e.response?.data?.error || 'Error al obtener inscripciones');
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchEnrollments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="component-container">
-      <h2>🔴 Fase A: Prospección e Interés (Redis)</h2>
-      <p>
-        Esta fase utiliza <strong>Redis</strong> para gestionar el registro inicial de interesados.
-        Redis permite validación de duplicados en tiempo real y rate limiting para evitar spam.
-      </p>
+      <h2>🔴 Fase A: Prospección - Interesados por institución</h2>
+      <p>Listado de interesados (enrollments) de tu institución.</p>
 
-      {message.text && (
-        <div className={`alert alert-${message.type}`}>
-          {message.text}
-        </div>
+      {loading && <div>Cargando inscripciones...</div>}
+      {error && <div className="alert alert-error">{error}</div>}
+
+      {!loading && !error && (
+        <>
+          <div style={{ marginBottom: '0.75rem' }}>
+            Total: <strong>{total}</strong>
+          </div>
+          <div style={{ overflowX: 'auto' }}>
+            <table className="table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr>
+                  <th style={{ textAlign: 'left', padding: '8px' }}>Nombre</th>
+                  <th style={{ textAlign: 'left', padding: '8px' }}>Email</th>
+                  <th style={{ textAlign: 'left', padding: '8px' }}>Carrera</th>
+                  <th style={{ textAlign: 'left', padding: '8px' }}>Estado</th>
+                  <th style={{ textAlign: 'left', padding: '8px' }}>Creado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((e) => (
+                  <tr key={`${e.institution_id}-${e.email}-${e.career_id}`}>
+                    <td style={{ padding: '8px' }}>{e.nombre_completo || '-'}</td>
+                    <td style={{ padding: '8px' }}>{e.email}</td>
+                    <td style={{ padding: '8px' }}>{e.career_name || e.career_id}</td>
+                    <td style={{ padding: '8px' }}>{e.enrollment_status || '-'}</td>
+                    <td style={{ padding: '8px' }}>{e.created_at ? new Date(e.created_at).toLocaleString() : '-'}</td>
+                  </tr>
+                ))}
+                {items.length === 0 && (
+                  <tr>
+                    <td colSpan={5} style={{ padding: '12px' }}>Sin inscripciones registradas.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
-
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="email">Email *</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            placeholder="ejemplo@email.com"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="nombre">Nombre *</label>
-          <input
-            type="text"
-            id="nombre"
-            name="nombre"
-            value={formData.nombre}
-            onChange={handleChange}
-            required
-            placeholder="Tu nombre"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="apellido">Apellido *</label>
-          <input
-            type="text"
-            id="apellido"
-            name="apellido"
-            value={formData.apellido}
-            onChange={handleChange}
-            required
-            placeholder="Tu apellido"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="telefono">Teléfono</label>
-          <input
-            type="tel"
-            id="telefono"
-            name="telefono"
-            value={formData.telefono}
-            onChange={handleChange}
-            placeholder="+54 11 1234-5678"
-          />
-        </div>
-
-        <button type="submit" className="btn" disabled={loading}>
-          {loading ? 'Registrando...' : 'Registrar Interés'}
-        </button>
-      </form>
-
-      <div style={{ marginTop: '2rem', padding: '1rem', backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-        <h4>💡 Sobre esta fase:</h4>
-        <ul style={{ marginLeft: '1.5rem', lineHeight: '1.8' }}>
-          <li><strong>Base de datos:</strong> Redis (clave-valor)</li>
-          <li><strong>Función:</strong> Registro rápido de interesados</li>
-          <li><strong>Características:</strong> Validación de duplicados, rate limiting, datos temporales</li>
-          <li><strong>Ventajas:</strong> Latencia ultra-baja, ideal para alta concurrencia</li>
-        </ul>
-      </div>
     </div>
   );
 }

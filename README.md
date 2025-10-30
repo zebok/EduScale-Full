@@ -481,3 +481,10 @@ Para consultas sobre este proyecto, por favor contactar a través del repositori
 ---
 
 **¡Gracias por usar EduScale! 🎓**
+
+
+## 🔑 Credenciales de prueba
+
+Usuario admin para UBA:
+- Email: `admin.uba@eduscale.com`
+- Password: `AdminUBA123`
