@@ -99,8 +99,10 @@ export default function MoreInfo() {
 
   // Categories derived from careers.category (use the 'category' field from tenant careers)
   // Fallback to static list extracted from init-tenants.js if backend does not expose category
-  const derivedCategories = Array.from(new Set(Object.values(careersMap).flat().map(c => (c.category || c.categoria || c.facultad)).filter(Boolean)));
-  const categories = derivedCategories.length > 0 ? derivedCategories : categoriesData;
+  // Prefer explicit career category fields; do NOT use faculty as a category.
+  const derivedCategories = Array.from(new Set(Object.values(careersMap).flat().map(c => (c.category || c.categoria)).filter(Boolean))).sort((a,b)=>a.localeCompare(b, 'es'));
+  const fallbackCategories = Array.from(new Set(categoriesData)).sort((a,b)=>a.localeCompare(b, 'es'));
+  const categories = derivedCategories.length > 0 ? derivedCategories : fallbackCategories;
 
   const durations = Array.from(new Set(Object.values(careersMap).flat().map(c => c.duracion_años).filter(v => v != null))).sort((a,b)=>a-b);
 
