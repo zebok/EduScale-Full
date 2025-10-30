@@ -14,8 +14,9 @@ const limiter = rateLimit({
 // GET: Obtener todas las instituciones activas
 router.get('/instituciones', async (req, res) => {
   try {
+    // Include city and province so frontend can filter by location
     const instituciones = await TenantConfig.find({ status: 'active' })
-      .select('institution_id institution.name institution.short_name institution.type careers domain branding.logo_url')
+      .select('institution_id institution.name institution.short_name institution.type institution.city institution.province careers domain branding.logo_url')
       .sort('institution.name');
 
     res.json({
@@ -25,6 +26,8 @@ router.get('/instituciones', async (req, res) => {
         nombre: inst.institution.name,
         nombre_corto: inst.institution.short_name,
         tipo: inst.institution.type,
+        city: inst.institution?.city || null,
+        province: inst.institution?.province || null,
         domain: inst.domain,
         logo_url: inst.branding?.logo_url,
         total_carreras: inst.careers.length

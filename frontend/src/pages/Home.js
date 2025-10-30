@@ -25,6 +25,7 @@ const Home = () => {
           <div className="hero-actions">
             <Link className="home-button" to="/application-form">Completar formulario</Link>
             <Link className="home-button home-button--secondary" to="/login">Ir al inicio de sesión</Link>
+            <Link className="home-button home-button--secondary" to="/more-info">Más información</Link>
           </div>
         </section>
 

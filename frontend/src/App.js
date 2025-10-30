@@ -10,6 +10,7 @@ import Prospection from './components/Prospection';
 import Admission from './components/Admission';
 import Enrollment from './components/Enrollment';
 import Relations from './components/Relations';
+import MoreInfo from './pages/MoreInfo';
 import './App.css';
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/application-form" element={<ApplicationForm />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/more-info" element={<MoreInfo />} />
           <Route path="/dashboard" element={
             <PrivateRoute>
               <Dashboard />
