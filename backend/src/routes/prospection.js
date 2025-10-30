@@ -76,10 +76,15 @@ router.get('/instituciones/:institucionId/carreras', async (req, res) => {
 // POST: Registrar interés (Fase A - Prospección)
 router.post('/', limiter, async (req, res) => {
   try {
-    const { email, nombreCompleto, institucionId, carreraId } = req.body;
+    const { email, nombreCompleto, dni, institucionId, carreraId } = req.body;
 
-    if (!email || !nombreCompleto || !institucionId || !carreraId) {
+    if (!email || !nombreCompleto || !dni || !institucionId || !carreraId) {
       return res.status(400).json({ error: 'Faltan campos requeridos' });
+    }
+
+    // Validar formato DNI (8 dígitos sin puntos)
+    if (!/^\d{7,8}$/.test(dni)) {
+      return res.status(400).json({ error: 'DNI inválido. Debe contener 7 u 8 dígitos' });
     }
 
     // Verificar si el email ya está registrado (validación de duplicados)
@@ -109,6 +114,7 @@ router.post('/', limiter, async (req, res) => {
     const prospectoData = {
       email,
       nombreCompleto,
+      dni,
       institucionId: institucion.institution_id,
       carreraId: carrera.career_id,
       timestamp: new Date().toISOString(),
@@ -119,13 +125,16 @@ router.post('/', limiter, async (req, res) => {
         institution_id: institucion.institution_id,
         nombre: institucion.institution.name,
         nombre_corto: institucion.institution.short_name,
-        tipo: institucion.institution.type
+        tipo: institucion.institution.type,
+        ciudad: institucion.institution.city,
+        provincia: institucion.institution.province
       },
       carrera: {
         career_id: carrera.career_id,
         nombre: carrera.name,
         codigo: carrera.code,
-        facultad: carrera.faculty
+        facultad: carrera.faculty,
+        categoria: carrera.category
       },
       estado: 'interesado',
       fase: 'A - Prospección'

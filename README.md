@@ -487,6 +487,10 @@ Ministerio2025!
 
 ## 🔑 Credenciales de prueba
 
+Usuario ministerio:
+ministerio@eduscale.edu.ar
+Ministerio2025!
+
 Usuario admin para UBA:
 - Email: `admin.uba@eduscale.com`
 - Password: `AdminUBA123`

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const TenantConfig = require('../models/TenantConfig');
 const authMiddleware = require('../middleware/authMiddleware');
+const neo4jService = require('../services/neo4jService');
 
 /**
  * Middleware para verificar que el usuario sea super_admin
@@ -164,6 +165,233 @@ router.get('/estadisticas', authMiddleware, requireSuperAdmin, async (req, res) 
         res.status(500).json({
             error: 'Error en el servidor',
             message: 'Error al obtener las estadísticas'
+        });
+    }
+});
+
+// ============================================
+// NEO4J ANALYTICS ENDPOINTS
+// ============================================
+
+/**
+ * GET /api/ministerio/analytics/carreras-por-edad
+ * Obtener carreras más populares por rango etario
+ */
+router.get('/analytics/carreras-por-edad', authMiddleware, requireSuperAdmin, async (req, res) => {
+    try {
+        const { minAge = 18, maxAge = 30 } = req.query;
+
+        const results = await neo4jService.getPopularCareersByAge(
+            parseInt(minAge),
+            parseInt(maxAge)
+        );
+
+        res.json({
+            rango_edad: { min: parseInt(minAge), max: parseInt(maxAge) },
+            total_resultados: results.length,
+            carreras: results
+        });
+
+    } catch (error) {
+        console.error('Error en analytics carreras por edad:', error);
+        res.status(500).json({
+            error: 'Error en el servidor',
+            message: 'Error al obtener carreras por edad'
+        });
+    }
+});
+
+/**
+ * GET /api/ministerio/analytics/tasas-conversion
+ * Obtener tasas de aceptación/rechazo por universidad
+ */
+router.get('/analytics/tasas-conversion', authMiddleware, requireSuperAdmin, async (req, res) => {
+    try {
+        const results = await neo4jService.getUniversityConversionRates();
+
+        res.json({
+            total_universidades: results.length,
+            universidades: results
+        });
+
+    } catch (error) {
+        console.error('Error en analytics tasas de conversión:', error);
+        res.status(500).json({
+            error: 'Error en el servidor',
+            message: 'Error al obtener tasas de conversión'
+        });
+    }
+});
+
+/**
+ * GET /api/ministerio/analytics/abandono-por-etapa
+ * Obtener distribución de alumnos por etapa
+ */
+router.get('/analytics/abandono-por-etapa', authMiddleware, requireSuperAdmin, async (req, res) => {
+    try {
+        const results = await neo4jService.getDropoutByStage();
+
+        res.json({
+            total_etapas: results.length,
+            distribucion: results
+        });
+
+    } catch (error) {
+        console.error('Error en analytics abandono por etapa:', error);
+        res.status(500).json({
+            error: 'Error en el servidor',
+            message: 'Error al obtener abandono por etapa'
+        });
+    }
+});
+
+/**
+ * GET /api/ministerio/analytics/clusters-demograficos
+ * Detectar grupos demográficos con intereses similares
+ */
+router.get('/analytics/clusters-demograficos', authMiddleware, requireSuperAdmin, async (req, res) => {
+    try {
+        const { demographic = 'provincia' } = req.query;
+
+        // Validate demographic parameter
+        const allowedDemographics = ['provincia', 'edad', 'region'];
+        if (!allowedDemographics.includes(demographic)) {
+            return res.status(400).json({
+                error: 'Parámetro inválido',
+                message: `El parámetro 'demographic' debe ser uno de: ${allowedDemographics.join(', ')}`
+            });
+        }
+
+        const results = await neo4jService.getCareerClustersByDemographic(demographic);
+
+        res.json({
+            demographic,
+            total_clusters: results.length,
+            clusters: results
+        });
+
+    } catch (error) {
+        console.error('Error en analytics clusters demográficos:', error);
+        res.status(500).json({
+            error: 'Error en el servidor',
+            message: 'Error al obtener clusters demográficos'
+        });
+    }
+});
+
+/**
+ * GET /api/ministerio/analytics/persona/:dni
+ * Obtener el journey completo de una persona por DNI
+ */
+router.get('/analytics/persona/:dni', authMiddleware, requireSuperAdmin, async (req, res) => {
+    try {
+        const { dni } = req.params;
+
+        if (!/^\d{7,8}$/.test(dni)) {
+            return res.status(400).json({
+                error: 'DNI inválido',
+                message: 'El DNI debe contener 7 u 8 dígitos'
+            });
+        }
+
+        const journey = await neo4jService.getStudentJourney(dni);
+
+        if (!journey) {
+            return res.status(404).json({
+                error: 'Persona no encontrada',
+                message: `No se encontró información para el DNI ${dni}`
+            });
+        }
+
+        res.json({
+            dni,
+            journey
+        });
+
+    } catch (error) {
+        console.error('Error en analytics persona:', error);
+        res.status(500).json({
+            error: 'Error en el servidor',
+            message: 'Error al obtener journey de la persona'
+        });
+    }
+});
+
+/**
+ * POST /api/ministerio/analytics/enriquecer-persona
+ * Enriquecer datos demográficos de una persona
+ */
+router.post('/analytics/enriquecer-persona', authMiddleware, requireSuperAdmin, async (req, res) => {
+    try {
+        const { dni, ...additionalData } = req.body;
+
+        if (!dni || !/^\d{7,8}$/.test(dni)) {
+            return res.status(400).json({
+                error: 'DNI inválido',
+                message: 'Se requiere un DNI válido de 7 u 8 dígitos'
+            });
+        }
+
+        await neo4jService.enrichPersonaData(dni, additionalData);
+
+        res.json({
+            message: 'Datos de la persona enriquecidos exitosamente',
+            dni,
+            datos_agregados: Object.keys(additionalData)
+        });
+
+    } catch (error) {
+        console.error('Error al enriquecer persona:', error);
+        res.status(500).json({
+            error: 'Error en el servidor',
+            message: 'Error al enriquecer datos de la persona'
+        });
+    }
+});
+
+/**
+ * GET /api/ministerio/analytics/resumen
+ * Obtener un resumen ejecutivo de todas las métricas
+ */
+router.get('/analytics/resumen', authMiddleware, requireSuperAdmin, async (req, res) => {
+    try {
+        // Execute multiple analytics queries in parallel
+        const [
+            conversionRates,
+            dropoutStats,
+            popularCareers
+        ] = await Promise.all([
+            neo4jService.getUniversityConversionRates(),
+            neo4jService.getDropoutByStage(),
+            neo4jService.getPopularCareersByAge(18, 30)
+        ]);
+
+        // Calculate totals
+        const totalInteresados = conversionRates.reduce((sum, u) => sum + u.total_interesados, 0);
+        const totalAceptados = conversionRates.reduce((sum, u) => sum + u.aceptados, 0);
+        const totalRechazados = conversionRates.reduce((sum, u) => sum + u.rechazados, 0);
+        const totalEnProceso = conversionRates.reduce((sum, u) => sum + u.en_proceso, 0);
+
+        res.json({
+            resumen_general: {
+                total_interesados: totalInteresados,
+                total_aceptados: totalAceptados,
+                total_rechazados: totalRechazados,
+                total_en_proceso: totalEnProceso,
+                tasa_aceptacion_global: totalInteresados > 0
+                    ? ((totalAceptados / totalInteresados) * 100).toFixed(2)
+                    : 0
+            },
+            universidades_top: conversionRates.slice(0, 5),
+            carreras_mas_demandadas: popularCareers.slice(0, 10),
+            distribucion_por_etapa: dropoutStats
+        });
+
+    } catch (error) {
+        console.error('Error en resumen analytics:', error);
+        res.status(500).json({
+            error: 'Error en el servidor',
+            message: 'Error al obtener resumen de analytics'
         });
     }
 });

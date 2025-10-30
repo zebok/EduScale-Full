@@ -110,6 +110,10 @@ ON enrollments (admission_status);
 CREATE INDEX IF NOT EXISTS idx_academic_year
 ON enrollments (academic_year);
 
+-- Index by documento (DNI) for person-based queries
+CREATE INDEX IF NOT EXISTS idx_documento
+ON enrollments (documento);
+
 -- ===============================================
 -- EJEMPLO DE DATOS INICIALES: 5 inscripciones por universidad (demo)
 -- ===============================================

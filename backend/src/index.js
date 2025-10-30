@@ -157,7 +157,11 @@ process.on('SIGINT', async () => {
     await mongoConfig.mongoose.connection.close();
     await cassandraConfig.cassandraClient.shutdown();
     await redisConfig.redisClient.quit();
-    await neo4jConfig.neo4jDriver.close();
+    if (neo4jConfig.closeNeo4j) {
+      await neo4jConfig.closeNeo4j();
+    } else if (neo4jConfig.neo4jDriver) {
+      await neo4jConfig.neo4jDriver.close();
+    }
     console.log('✓ Conexiones cerradas correctamente');
     process.exit(0);
   } catch (error) {

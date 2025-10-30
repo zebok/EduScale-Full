@@ -1,10 +1,11 @@
 const redisConfig = require('../config/redis');
 const enrollmentService = require('../services/enrollmentService');
+const neo4jService = require('../services/neo4jService');
 
 
 class RedisToEnrollmentWorker {
   constructor() {
-    this.intervalMs = 15 * 60 * 1000; // 15 minutes
+    this.intervalMs = 30 * 1000; // 30 seconds (for testing)
     this.batchSize = 100; // Process 100 records at a time
     this.isRunning = false;
     this.intervalId = null;
@@ -13,6 +14,8 @@ class RedisToEnrollmentWorker {
       totalCreated: 0,
       totalSkipped: 0,
       totalErrors: 0,
+      totalNeo4jSynced: 0,
+      totalNeo4jErrors: 0,
       lastRunTime: null,
       lastRunDuration: 0
     };
@@ -27,7 +30,7 @@ class RedisToEnrollmentWorker {
       return;
     }
 
-    console.log(`🚀 Starting Redis → Cassandra Worker (every ${this.intervalMs / 1000 / 60} minutes)`);
+    console.log(`🚀 Starting Redis → Cassandra → Neo4j Worker (every ${this.intervalMs / 1000} seconds)`);
     this.isRunning = true;
 
     // Run immediately on start
@@ -138,6 +141,9 @@ class RedisToEnrollmentWorker {
       this.stats.totalSkipped += results.skipped;
       this.stats.totalErrors += results.errors;
 
+      // Sync successfully created enrollments to Neo4j
+      await this.syncToNeo4j(prospectionBatch, results);
+
       // Clean up Redis keys for successfully processed records
       const keysToDelete = [];
       for (let i = 0; i < prospectionBatch.length; i++) {
@@ -156,6 +162,47 @@ class RedisToEnrollmentWorker {
 
     } catch (error) {
       console.error('❌ [Worker] Error processing batch:', error);
+    }
+  }
+
+  /**
+   * Sync successfully processed records to Neo4j
+   */
+  async syncToNeo4j(prospectionBatch, cassandraResults) {
+    try {
+      let syncedCount = 0;
+      let errorCount = 0;
+
+      // Only sync records that were successfully created in Cassandra
+      for (const prospecto of prospectionBatch) {
+        // Skip if it was an error in Cassandra
+        const wasError = cassandraResults.errorDetails.find(e => e.email === prospecto.email);
+        if (wasError) {
+          continue;
+        }
+
+        // Validate that prospecto has DNI
+        if (!prospecto.dni) {
+          console.log(`⚠️  [Worker->Neo4j] Skipping ${prospecto.email}: no DNI`);
+          continue;
+        }
+
+        try {
+          await neo4jService.syncStudentInterest(prospecto);
+          syncedCount++;
+        } catch (neo4jError) {
+          console.error(`❌ [Worker->Neo4j] Error syncing ${prospecto.email}:`, neo4jError.message);
+          errorCount++;
+        }
+      }
+
+      this.stats.totalNeo4jSynced += syncedCount;
+      this.stats.totalNeo4jErrors += errorCount;
+
+      console.log(`🔄 [Worker->Neo4j] Synced ${syncedCount} records to Neo4j (${errorCount} errors)`);
+
+    } catch (error) {
+      console.error('❌ [Worker->Neo4j] Batch sync error:', error);
     }
   }
 

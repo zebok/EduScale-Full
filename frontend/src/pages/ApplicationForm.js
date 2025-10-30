@@ -8,6 +8,7 @@ const ApplicationForm = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     nombreCompleto: '',
+    dni: '',
     email: '',
     institucionId: '',
     carreraId: ''
@@ -124,6 +125,7 @@ const ApplicationForm = () => {
       // Resetear formulario
       setFormData({
         nombreCompleto: '',
+        dni: '',
         email: '',
         institucionId: '',
         carreraId: ''
@@ -181,6 +183,22 @@ const ApplicationForm = () => {
               value={formData.nombreCompleto}
               onChange={handleChange}
               placeholder="Ej: Juan Pérez"
+              required
+              disabled={loading}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="dni">DNI *</label>
+            <input
+              type="text"
+              id="dni"
+              name="dni"
+              value={formData.dni}
+              onChange={handleChange}
+              placeholder="Ej: 12345678"
+              pattern="\d{7,8}"
+              title="El DNI debe tener 7 u 8 dígitos"
               required
               disabled={loading}
             />
