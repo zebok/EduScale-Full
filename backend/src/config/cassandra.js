@@ -26,45 +26,10 @@ async function initializeCassandra() {
     await client.connect();
     console.log('✓ Connected to Cassandra');
 
-    // Read initialization script
-    const initScriptPath = path.join(__dirname, '../../../cassandra-init/init-keyspace.cql');
-
-    if (!fs.existsSync(initScriptPath)) {
-      console.warn('⚠️  Cassandra init script not found. Skipping table creation.');
-      return;
-    }
-
-    const initScript = fs.readFileSync(initScriptPath, 'utf8');
-
-    // Split script by semicolons and filter out comments and empty lines
-    const statements = initScript
-      .split(';')
-      .map(stmt => stmt.trim())
-      .filter(stmt => stmt.length > 0 && !stmt.startsWith('--'));
-
-    console.log('🚀 Initializing Cassandra keyspace and tables...');
-
-    // Execute each statement
-    for (const statement of statements) {
-      if (statement.toLowerCase().includes('describe')) {
-        continue; // Skip DESCRIBE statements
-      }
-
-      try {
-        await client.execute(statement);
-      } catch (err) {
-        // Ignore errors for already existing objects
-        if (!err.message.includes('already exists') && !err.message.includes('Cannot add existing')) {
-          console.error(`Error executing statement: ${statement.substring(0, 100)}...`);
-          console.error(err.message);
-        }
-      }
-    }
-
-    // Switch to eduscale keyspace
+    // Switch to eduscale keyspace (assumes it was created by docker-entrypoint-initdb.d)
     await client.execute(`USE ${keyspace}`);
 
-    console.log('✓ Cassandra keyspace and tables initialized');
+    console.log('✓ Cassandra keyspace initialized');
     cassandraReady = true;
 
   } catch (error) {
