@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './ApplicationForm.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
@@ -21,9 +21,29 @@ const ApplicationForm = () => {
   const [successMessage, setSuccessMessage] = useState(null);
 
   // Cargar instituciones al montar el componente
+  const location = useLocation();
+
   useEffect(() => {
-    fetchInstituciones();
-  }, []);
+    // Parse posible query params para prefill desde MoreInfo
+    const params = new URLSearchParams(location.search);
+    const pInst = params.get('institucionId');
+    const pCarr = params.get('carreraId');
+
+    // Fetch instituciones first, then if we have params, prefill and fetch carreras
+    async function init() {
+      await fetchInstituciones();
+      if (pInst) {
+        setFormData(prev => ({ ...prev, institucionId: pInst }));
+        await fetchCarreras(pInst);
+        if (pCarr) {
+          setFormData(prev => ({ ...prev, carreraId: pCarr }));
+        }
+      }
+    }
+
+    init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search]);
 
   const fetchInstituciones = async () => {
     try {

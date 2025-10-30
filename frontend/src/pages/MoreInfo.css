@@ -10,6 +10,9 @@
 .mi-meta { color: #666; font-size: 0.9rem; }
 .mi-card-actions button { padding: 8px 10px; border-radius: 6px; background: #667eea; color: #fff; border: none; }
 
+.mi-back-button, .mi-category-button, .mi-reset-button { padding: 8px 10px; border-radius: 6px; border: 1px solid #ddd; background: #fff; }
+.mi-apply-button { display:inline-block; padding:6px 10px; background:#28a745; color:#fff; border-radius:6px; text-decoration:none }
+
 .mi-modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; }
 .mi-modal { background: #fff; border-radius: 8px; width: 90%; max-width: 800px; max-height: 80vh; overflow: auto; }
 .mi-modal-header { display:flex; align-items:center; justify-content:space-between; padding: 12px 16px; border-bottom: 1px solid #eee; }

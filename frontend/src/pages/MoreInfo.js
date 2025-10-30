@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './MoreInfo.css';
 
-function CareersModal({ visible, onClose, careers, institutionName }) {
+function CareersModal({ visible, onClose, careers, institutionName, institucionId }) {
   if (!visible) return null;
   return (
     <div className="mi-modal-backdrop">
@@ -21,6 +22,7 @@ function CareersModal({ visible, onClose, careers, institutionName }) {
                   <th>Facultad</th>
                   <th>Duración (años)</th>
                   <th>Modalidad</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -30,6 +32,11 @@ function CareersModal({ visible, onClose, careers, institutionName }) {
                     <td>{c.facultad}</td>
                     <td>{c.duracion_años ?? '-'}</td>
                     <td>{c.modalidad ?? '-'}</td>
+                    <td>
+                      <a className="mi-apply-button" href={`/application-form?institucionId=${institucionId}&carreraId=${c.id}`}>
+                        Inscribirme
+                      </a>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -48,6 +55,7 @@ export default function MoreInfo() {
 
   const [filters, setFilters] = useState({ province: '', degreeType: '', duration: '' });
   const [search, setSearch] = useState('');
+  const [showCategory, setShowCategory] = useState(true);
 
   const [modalState, setModalState] = useState({ visible: false, careers: [], name: '' });
 
@@ -110,8 +118,15 @@ export default function MoreInfo() {
 
   const filtered = instituciones.filter(matchesFilters);
 
+  const navigate = useNavigate();
+
   return (
     <div className="mi-page">
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+        <button onClick={() => navigate('/')} className="mi-back-button">← Volver al inicio</button>
+        <button onClick={() => setShowCategory(s => !s)} className="mi-category-button">Categoría</button>
+        <button onClick={() => { setFilters({ province: '', degreeType: '', duration: '' }); setSearch(''); }} className="mi-reset-button">Reset filtros</button>
+      </div>
       <header className="mi-header">
         <h1>Más Información</h1>
         <p>Explorá universidades y filtrá por carreras, ubicación y duración.</p>
@@ -123,10 +138,12 @@ export default function MoreInfo() {
           <option value="">Todas las provincias</option>
           {provinces.map(p => <option key={p} value={p}>{p}</option>)}
         </select>
-        <select value={filters.degreeType} onChange={e=>setFilters({...filters, degreeType: e.target.value})}>
-          <option value="">Todas las modalidades</option>
-          {degreeTypes.map(d => <option key={d} value={d}>{d}</option>)}
-        </select>
+        {showCategory && (
+          <select value={filters.degreeType} onChange={e=>setFilters({...filters, degreeType: e.target.value})}>
+            <option value="">Todas las modalidades</option>
+            {degreeTypes.map(d => <option key={d} value={d}>{d}</option>)}
+          </select>
+        )}
         <select value={filters.duration} onChange={e=>setFilters({...filters, duration: e.target.value})}>
           <option value="">Cualquier duración</option>
           {durations.map(d => <option key={d} value={d}>{d} años</option>)}
@@ -147,7 +164,7 @@ export default function MoreInfo() {
                   <div className="mi-meta">{inst.tipo} · {inst.total_carreras} carreras</div>
                 </div>
                 <div className="mi-card-actions">
-                  <button onClick={() => setModalState({ visible: true, careers: careersMap[inst.id] || [], name: inst.nombre })}>Ver carreras</button>
+                  <button onClick={() => setModalState({ visible: true, careers: careersMap[inst.id] || [], name: inst.nombre, institucionId: inst.id })}>Ver carreras</button>
                 </div>
               </div>
             ))
@@ -155,7 +172,7 @@ export default function MoreInfo() {
         )}
       </section>
 
-      <CareersModal visible={modalState.visible} onClose={() => setModalState({ visible: false, careers: [], name: '' })} careers={modalState.careers} institutionName={modalState.name} />
+      <CareersModal visible={modalState.visible} onClose={() => setModalState({ visible: false, careers: [], name: '', institucionId: '' })} careers={modalState.careers} institutionName={modalState.name} institucionId={modalState.institucionId} />
     </div>
   );
 }
