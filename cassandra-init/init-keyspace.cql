@@ -124,20 +124,3 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS enrollments_by_status AS
       AND email IS NOT NULL
       AND career_id IS NOT NULL
     PRIMARY KEY ((institution_id, enrollment_status), email, career_id);
-
--- ============================================
--- MATERIALIZED VIEW: Enrollments by Year
--- For efficient queries by institution and year
--- ============================================
-
-CREATE MATERIALIZED VIEW IF NOT EXISTS enrollments_by_year AS
-    SELECT institution_id, academic_year, email, career_id,
-           nombre_completo, career_name, enrollment_status, created_at
-    FROM enrollments
-    WHERE institution_id IS NOT NULL
-      AND academic_year IS NOT NULL
-      AND email IS NOT NULL
-      AND career_id IS NOT NULL
-    PRIMARY KEY ((institution_id, academic_year), email, career_id);
-
-DESCRIBE TABLE enrollments;
