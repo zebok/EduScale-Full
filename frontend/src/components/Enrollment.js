@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import useEnrollmentAPI from "../hooks/useEnrollmentAPI";
 import EnrollmentHistoryModal from "./EnrollmentHistoryModal";
-import useTenantTheme from "../hooks/useTenantTheme";
 
 function Enrollment() {
   const [formData, setFormData] = useState({
@@ -22,7 +21,6 @@ function Enrollment() {
   const [showHistory, setShowHistory] = useState(false);
 
   const { createEnrollment, getEnrollmentsByInstitution, getEnrollmentHistory } = useEnrollmentAPI();
-  const { loading: themeLoading, theme } = useTenantTheme(formData.institucion);
 
   useEffect(() => {
     // If institution changes, clear current results and modal
@@ -109,7 +107,7 @@ function Enrollment() {
     marginBottom: 12,
     padding: 8,
     borderRadius: 6,
-    background: theme.secondaryColor || '#f4f4f4'
+    background: '#f4f4f4'
   };
 
   const logoStyle = { height: 48, objectFit: 'contain' };
@@ -117,14 +115,10 @@ function Enrollment() {
   return (
     <div className="component-container">
       <div style={headerStyle}>
-        {theme.logoUrl ? (
-          <img src={theme.logoUrl} alt="logo" style={logoStyle} />
-        ) : (
-          <div style={{ width: 48, height: 48, background: '#eee', borderRadius: 6 }} />
-        )}
+        <div style={{ width: 48, height: 48, background: '#eee', borderRadius: 6 }} />
         <div>
-          <h2 style={{ margin: 0, color: theme.primaryColor || '#000' }}>📊 Fase C: Registro de Inscripción (Cassandra)</h2>
-          <div style={{ color: '#666' }}>{theme.heroText || 'Bienvenido'}</div>
+          <h2 style={{ margin: 0, color: '#000' }}>📊 Fase C: Registro de Inscripción (Cassandra)</h2>
+          <div style={{ color: '#666' }}>Registro de inscripciones (branding cargado desde MongoDB)</div>
         </div>
       </div>
 
@@ -210,11 +204,11 @@ function Enrollment() {
         </div>
 
         <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
-          <button type="submit" className="btn" disabled={loading || themeLoading} style={{ padding: '8px 12px' }}>
+          <button type="submit" className="btn" disabled={loading} style={{ padding: '8px 12px' }}>
             {loading ? 'Registrando...' : 'Registrar Inscripción'}
           </button>
 
-          <button type="button" onClick={handleFetchByInstitution} disabled={loading || themeLoading} style={{ padding: '8px 12px' }}>
+          <button type="button" onClick={handleFetchByInstitution} disabled={loading} style={{ padding: '8px 12px' }}>
             {loading ? 'Procesando...' : 'Listar Inscripciones de la Institución'}
           </button>
         </div>
