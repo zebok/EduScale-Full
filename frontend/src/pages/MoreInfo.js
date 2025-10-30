@@ -96,8 +96,12 @@ export default function MoreInfo() {
 
   const degreeTypes = Array.from(new Set(Object.values(careersMap).flat().map(c => c.modalidad || c.degree_type).filter(Boolean)));
 
-  // Categories derived from careers.facultad
-  const categories = Array.from(new Set(Object.values(careersMap).flat().map(c => c.facultad).filter(Boolean)));
+  // Categories derived from careers.category (use the 'category' field from tenant careers)
+  // Fallback to static list extracted from init-tenants.js if backend does not expose category
+  // Prefer the Spanish 'categoria' field; fall back to 'category' if present.
+  // Do NOT use faculty as a category.
+  const derivedCategories = Array.from(new Set(Object.values(careersMap).flat().map(c => (c.categoria || c.category)).filter(Boolean))).sort((a,b)=>a.localeCompare(b, 'es'));
+  const categories = derivedCategories;
 
   const durations = Array.from(new Set(Object.values(careersMap).flat().map(c => c.duracion_años).filter(v => v != null))).sort((a,b)=>a-b);
 
@@ -113,7 +117,8 @@ export default function MoreInfo() {
       if (!any) return false;
     }
     if (filters.category) {
-      const anyCat = careers.some(c => (c.facultad || '').toLowerCase() === filters.category.toLowerCase());
+      // Match against the career's `categoria` (spanish) or `category` property
+      const anyCat = careers.some(c => ((c.categoria || c.category || '').toLowerCase() === filters.category.toLowerCase()));
       if (!anyCat) return false;
     }
     if (filters.duration) {

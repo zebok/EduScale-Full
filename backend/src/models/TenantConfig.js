@@ -56,6 +56,7 @@ const tenantConfigSchema = new mongoose.Schema({
     career_id: String,
     code: String,
     name: String,
+    category: String,
     faculty: String,
     degree_type: String,
     degree_title: String,
