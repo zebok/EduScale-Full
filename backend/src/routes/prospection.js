@@ -58,6 +58,9 @@ router.get('/instituciones/:institucionId/carreras', async (req, res) => {
         nombre: carrera.name,
         codigo: carrera.code,
         facultad: carrera.faculty,
+        // Expose category in Spanish and English if present in the tenant seed
+        categoria: carrera.category || carrera.categoria || null,
+        category: carrera.category || carrera.categoria || null,
         duracion_años: carrera.duration_years,
         modalidad: carrera.modality,
         turnos: carrera.shift,
