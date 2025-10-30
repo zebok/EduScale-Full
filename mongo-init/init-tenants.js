@@ -15,7 +15,7 @@ db.tenantconfigs.insertMany([
         institution: {
             name: "Universidad de Buenos Aires",
             short_name: "UBA",
-            type: "universidad_publica",
+            type: "Universidad Pública",
             country: "Argentina",
             city: "Buenos Aires",
             province: "CABA",
@@ -35,7 +35,7 @@ db.tenantconfigs.insertMany([
                 accent_color: "#004080",
                 font_family: "Roboto"
             },
-            logo_url: "https://via.placeholder.com/200x80?text=UBA"
+            logo_url: "https://upload.wikimedia.org/wikipedia/commons/a/a3/UBA.png"
         },
         texts: {
             welcome: {
@@ -63,11 +63,11 @@ db.tenantconfigs.insertMany([
                 name: "Medicina",
                 category: "Ciencias de la Salud",
                 faculty: "Facultad de Medicina",
-                degree_type: "grado",
+                degree_type: "Grado",
                 degree_title: "Médico/a",
                 duration_years: 6,
-                modality: "presencial",
-                shift: ["tiempo_completo"],
+                modality: "Presencial",
+                shift: ["Tiempo completo"],
                 cupo_anual: 2500,
                 description: "Formación médica integral con práctica hospitalaria",
                 requirements: {
@@ -87,11 +87,11 @@ db.tenantconfigs.insertMany([
                 name: "Abogacía",
                 category: "Ciencias Jurídicas y Políticas",
                 faculty: "Facultad de Derecho",
-                degree_type: "grado",
+                degree_type: "Grado",
                 degree_title: "Abogado/a",
                 duration_years: 5,
-                modality: "presencial",
-                shift: ["mañana", "tarde", "noche"],
+                modality: "Presencial",
+                shift: ["Mañana", "Tarde", "Noche"],
                 cupo_anual: 5000,
                 description: "Formación jurídica completa",
                 requirements: {
@@ -124,7 +124,7 @@ db.tenantconfigs.insertMany([
         institution: {
             name: "Universidad Católica Argentina",
             short_name: "UCA",
-            type: "universidad_privada",
+            type: "Universidad Privada",
             country: "Argentina",
             city: "Buenos Aires",
             province: "CABA",
@@ -144,7 +144,7 @@ db.tenantconfigs.insertMany([
                 accent_color: "#B22222",
                 font_family: "Merriweather"
             },
-            logo_url: "https://via.placeholder.com/200x80?text=UCA"
+            logo_url: "https://upload.wikimedia.org/wikipedia/commons/c/cb/Universidad_Cat%C3%B3lica_Argentina.png"
         },
         texts: {
             welcome: {
@@ -172,11 +172,11 @@ db.tenantconfigs.insertMany([
                 name: "Abogacía",
                 category: "Ciencias Jurídicas y Políticas",
                 faculty: "Facultad de Derecho",
-                degree_type: "grado",
+                degree_type: "Grado",
                 degree_title: "Abogado/a",
                 duration_years: 5,
-                modality: "presencial",
-                shift: ["mañana", "tarde"],
+                modality: "Presencial",
+                shift: ["Mañana", "Tarde"],
                 cupo_anual: 600,
                 description: "Formación jurídica con valores éticos",
                 requirements: {
@@ -196,11 +196,11 @@ db.tenantconfigs.insertMany([
                 name: "Licenciatura en Psicología",
                 category: "Ciencias Sociales y Humanas",
                 faculty: "Facultad de Psicología y Psicopedagogía",
-                degree_type: "grado",
+                degree_type: "Grado",
                 degree_title: "Licenciado/a en Psicología",
                 duration_years: 5,
-                modality: "presencial",
-                shift: ["mañana", "noche"],
+                modality: "Presencial",
+                shift: ["Mañana", "Noche"],
                 cupo_anual: 500,
                 description: "Psicología con enfoque integral",
                 requirements: {
@@ -233,7 +233,7 @@ db.tenantconfigs.insertMany([
         institution: {
             name: "Instituto Tecnológico de Buenos Aires",
             short_name: "ITBA",
-            type: "universidad_privada",
+            type: "Universidad Privada",
             country: "Argentina",
             city: "Buenos Aires",
             province: "CABA",
@@ -253,7 +253,7 @@ db.tenantconfigs.insertMany([
                 accent_color: "#FF6600",
                 font_family: "Open Sans"
             },
-            logo_url: "https://via.placeholder.com/200x80?text=ITBA"
+            logo_url: "https://centros-investigacion.s3.sa-east-1.amazonaws.com/wp-content/uploads/sites/14/2020/11/logo-itba-site.png"
         },
         texts: {
             welcome: {
@@ -280,11 +280,11 @@ db.tenantconfigs.insertMany([
                 name: "Ingeniería Informática",
                 category: "Tecnología y Computación",
                 faculty: "Escuela de Ingeniería",
-                degree_type: "grado",
+                degree_type: "Grado",
                 degree_title: "Ingeniero/a Informático/a",
                 duration_years: 5,
-                modality: "presencial",
-                shift: ["mañana"],
+                modality: "Presencial",
+                shift: ["Mañana"],
                 cupo_anual: 180,
                 description: "Desarrollo de software, IA y sistemas",
                 requirements: {
@@ -337,7 +337,7 @@ db.tenantconfigs.insertMany([
                 accent_color: "#FF6B35",
                 font_family: "Lato"
             },
-            logo_url: "https://via.placeholder.com/200x80?text=UTN"
+            logo_url: "https://images.seeklogo.com/logo-png/14/2/universidad-tecnologica-nacional-logo-png_seeklogo-145804.png"
         },
         texts: {
             welcome: {
@@ -364,11 +364,11 @@ db.tenantconfigs.insertMany([
                 name: "Ingeniería en Sistemas de Información",
                 category: "Tecnología y Computación",
                 faculty: "Facultad Regional Buenos Aires",
-                degree_type: "grado",
+                degree_type: "Grado",
                 degree_title: "Ingeniero/a en Sistemas",
                 duration_years: 5,
-                modality: "presencial",
-                shift: ["mañana", "noche"],
+                modality: "Presencial",
+                shift: ["Mañana", "Noche"],
                 cupo_anual: 1200,
                 description: "Desarrollo de sistemas y software",
                 requirements: {
@@ -401,7 +401,7 @@ db.tenantconfigs.insertMany([
         institution: {
             name: "Universidad de Palermo",
             short_name: "UP",
-            type: "universidad_privada",
+            type: "Universidad Privada",
             country: "Argentina",
             city: "Buenos Aires",
             province: "CABA",
@@ -421,7 +421,7 @@ db.tenantconfigs.insertMany([
                 accent_color: "#F7941D",
                 font_family: "Montserrat"
             },
-            logo_url: "https://via.placeholder.com/200x80?text=UP"
+            logo_url: "https://images.seeklogo.com/logo-png/14/2/universidad-de-palermo-logo-png_seeklogo-145717.png"
         },
         texts: {
             welcome: {
@@ -449,11 +449,11 @@ db.tenantconfigs.insertMany([
                 name: "Diseño Gráfico",
                 category: "Artes, Diseño y Comunicación",
                 faculty: "Facultad de Diseño y Comunicación",
-                degree_type: "grado",
+                degree_type: "Grado",
                 degree_title: "Diseñador/a Gráfico/a",
                 duration_years: 4,
-                modality: "presencial",
-                shift: ["mañana", "noche"],
+                modality: "Presencial",
+                shift: ["Mañana", "Noche"],
                 cupo_anual: 800,
                 description: "Diseño visual y comunicación",
                 requirements: {
@@ -486,7 +486,7 @@ db.tenantconfigs.insertMany([
         institution: {
             name: "Universidad Nacional de La Plata",
             short_name: "UNLP",
-            type: "universidad_publica",
+            type: "Universidad Pública",
             country: "Argentina",
             city: "La Plata",
             province: "Buenos Aires",
@@ -506,7 +506,7 @@ db.tenantconfigs.insertMany([
                 accent_color: "#CD853F",
                 font_family: "Source Sans Pro"
             },
-            logo_url: "https://via.placeholder.com/200x80?text=UNLP"
+            logo_url: "https://upload.wikimedia.org/wikipedia/commons/7/74/UNLP_Logo_%28cropped%29.svg"
         },
         texts: {
             welcome: {
@@ -536,8 +536,8 @@ db.tenantconfigs.insertMany([
                 degree_type: "grado",
                 degree_title: "Licenciado/a en Informática",
                 duration_years: 5,
-                modality: "presencial",
-                shift: ["mañana", "noche"],
+                modality: "Presencial",
+                shift: ["Mañana", "Noche"],
                 cupo_anual: 600,
                 description: "Informática y computación",
                 requirements: {
@@ -570,7 +570,7 @@ db.tenantconfigs.insertMany([
         institution: {
             name: "Universidad Argentina de la Empresa",
             short_name: "UADE",
-            type: "universidad_privada",
+            type: "Universidad Privada",
             country: "Argentina",
             city: "Buenos Aires",
             province: "CABA",
@@ -590,7 +590,7 @@ db.tenantconfigs.insertMany([
                 accent_color: "#F7931E",
                 font_family: "Raleway"
             },
-            logo_url: "https://via.placeholder.com/200x80?text=UADE"
+            logo_url: "https://www.institucionulloa.com.ar/wp-content/uploads/2020/05/logo_mesa-de-trabajo-1-copia.png"
         },
         texts: {
             welcome: {
@@ -618,11 +618,11 @@ db.tenantconfigs.insertMany([
                 name: "Administración de Empresas",
                 category: "Ciencias Económicas y Empresariales",
                 faculty: "Facultad de Ciencias Empresariales",
-                degree_type: "grado",
+                degree_type: "Grado",
                 degree_title: "Licenciado/a en Administración",
                 duration_years: 4,
-                modality: "presencial",
-                shift: ["mañana", "noche"],
+                modality: "Presencial",
+                shift: ["Mañana", "Noche"],
                 cupo_anual: 800,
                 description: "Gestión empresarial e innovación",
                 requirements: {
@@ -655,7 +655,7 @@ db.tenantconfigs.insertMany([
         institution: {
             name: "Universidad Austral",
             short_name: "AUSTRAL",
-            type: "universidad_privada",
+            type: "Universidad Privada",
             country: "Argentina",
             city: "Pilar",
             province: "Buenos Aires",
@@ -675,7 +675,7 @@ db.tenantconfigs.insertMany([
                 accent_color: "#E84E0F",
                 font_family: "Nunito"
             },
-            logo_url: "https://via.placeholder.com/200x80?text=Austral"
+            logo_url: "https://www.austral.edu.ar/wp-content/uploads/2022/09/logo-footer.png?x65960&x65960"
         },
         texts: {
             welcome: {
@@ -705,8 +705,8 @@ db.tenantconfigs.insertMany([
                 degree_type: "grado",
                 degree_title: "Médico/a",
                 duration_years: 6,
-                modality: "presencial",
-                shift: ["tiempo_completo"],
+                modality: "Presencial",
+                shift: ["Tiempo Completo"],
                 cupo_anual: 120,
                 description: "Formación médica de excelencia",
                 requirements: {
@@ -759,7 +759,7 @@ db.tenantconfigs.insertMany([
                 accent_color: "#C0C0C0",
                 font_family: "Georgia"
             },
-            logo_url: "https://via.placeholder.com/200x80?text=UTDT"
+            logo_url: "https://www.helpargentina.org/images/default/ong/cuadrado_utdt-0155.png"
         },
         texts: {
             welcome: {
@@ -786,11 +786,11 @@ db.tenantconfigs.insertMany([
                 name: "Licenciatura en Economía",
                 category: "Ciencias Económicas y Empresariales",
                 faculty: "Departamento de Economía",
-                degree_type: "grado",
+                degree_type: "Grado",
                 degree_title: "Licenciado/a en Economía",
                 duration_years: 4,
-                modality: "presencial",
-                shift: ["mañana"],
+                modality: "Presencial",
+                shift: ["Mañana"],
                 cupo_anual: 80,
                 description: "Economía con rigor académico",
                 requirements: {
@@ -823,7 +823,7 @@ db.tenantconfigs.insertMany([
         institution: {
             name: "Universidad Nacional de Córdoba",
             short_name: "UNC",
-            type: "universidad_publica",
+            type: "Universidad Pública",
             country: "Argentina",
             city: "Córdoba",
             province: "Córdoba",
@@ -843,7 +843,7 @@ db.tenantconfigs.insertMany([
                 accent_color: "#9E1B32",
                 font_family: "Arial"
             },
-            logo_url: "https://via.placeholder.com/200x80?text=UNC"
+            logo_url: "https://upload.wikimedia.org/wikipedia/commons/c/c4/Escudo_UNC.png"
         },
         texts: {
             welcome: {
@@ -870,11 +870,11 @@ db.tenantconfigs.insertMany([
                 name: "Medicina",
                 category: "Ciencias de la Salud",
                 faculty: "Facultad de Ciencias Médicas",
-                degree_type: "grado",
+                degree_type: "Grado",
                 degree_title: "Médico/a",
                 duration_years: 6,
-                modality: "presencial",
-                shift: ["tiempo_completo"],
+                modality: "Presencial",
+                shift: ["Tiempo Completo"],
                 cupo_anual: 1500,
                 description: "Formación médica integral",
                 requirements: {
