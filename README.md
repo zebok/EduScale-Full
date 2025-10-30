@@ -481,3 +481,6 @@ Para consultas sobre este proyecto, por favor contactar a través del repositori
 ---
 
 **¡Gracias por usar EduScale! 🎓**
+
+ministerio@eduscale.edu.ar
+Ministerio2025!
