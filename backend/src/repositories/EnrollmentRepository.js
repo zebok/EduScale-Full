@@ -1,5 +1,6 @@
 const { executeQuery } = require('../config/cassandra');
 const cassandra = require('cassandra-driver');
+const TenantConfig = require('../models/TenantConfig');
 
 /**
  * EnrollmentRepository
@@ -7,9 +8,140 @@ const cassandra = require('cassandra-driver');
  */
 class EnrollmentRepository {
   /**
+   * Validate workflow stage transition
+   * @param {string} institutionId - Institution ID
+   * @param {string} currentStatus - Current enrollment status
+   * @param {number} targetStageId - Target stage ID
+   * @param {string} userRole - User role attempting the transition
+   * @returns {Promise<Object>} Validation result with allowed flag and details
+   */
+  async validateStageTransition(institutionId, currentStatus, targetStageId, userRole) {
+    try {
+      // Get institution workflow
+      const institution = await TenantConfig.findOne({ institution_id: institutionId });
+
+      if (!institution || !institution.enrollment_workflow || !institution.enrollment_workflow.stages) {
+        return {
+          allowed: false,
+          error: 'No workflow configured for this institution',
+          details: null
+        };
+      }
+
+      const workflow = institution.enrollment_workflow;
+
+      // Find current stage
+      const currentStage = workflow.stages.find(s => s.status_key === currentStatus);
+      if (!currentStage) {
+        return {
+          allowed: false,
+          error: `Current status '${currentStatus}' is not a valid workflow stage`,
+          details: { currentStatus, workflow: workflow.stages }
+        };
+      }
+
+      // Find target stage
+      const targetStage = workflow.stages.find(s => s.stage_id === targetStageId);
+      if (!targetStage) {
+        return {
+          allowed: false,
+          error: `Target stage ID ${targetStageId} not found in workflow`,
+          details: { targetStageId, availableStages: workflow.stages.map(s => s.stage_id) }
+        };
+      }
+
+      // Check if transition is allowed
+      if (!currentStage.next_stages.includes(targetStageId)) {
+        return {
+          allowed: false,
+          error: 'Transition not allowed in workflow',
+          details: {
+            currentStage: { id: currentStage.stage_id, name: currentStage.name },
+            targetStage: { id: targetStage.stage_id, name: targetStage.name },
+            allowedNextStages: currentStage.next_stages.map(id => {
+              const stage = workflow.stages.find(s => s.stage_id === id);
+              return { stage_id: id, name: stage?.name };
+            })
+          }
+        };
+      }
+
+      // Check role permissions
+      if (targetStage.allowed_roles && targetStage.allowed_roles.length > 0) {
+        if (!targetStage.allowed_roles.includes(userRole)) {
+          return {
+            allowed: false,
+            error: 'User role not authorized for this stage',
+            details: {
+              userRole,
+              requiredRoles: targetStage.allowed_roles,
+              targetStage: { id: targetStage.stage_id, name: targetStage.name }
+            }
+          };
+        }
+      }
+
+      // All validations passed
+      return {
+        allowed: true,
+        currentStage,
+        targetStage,
+        details: {
+          transition: `${currentStage.name} → ${targetStage.name}`,
+          requiresApproval: targetStage.requires_approval,
+          requiresDocuments: targetStage.requires_documents,
+          requiresPayment: targetStage.requires_payment
+        }
+      };
+
+    } catch (error) {
+      console.error('Error validating stage transition:', error);
+      return {
+        allowed: false,
+        error: 'Internal error during validation',
+        details: { message: error.message }
+      };
+    }
+  }
+
+  /**
+   * Get initial stage for a workflow
+   * @param {string} institutionId - Institution ID
+   * @returns {Promise<Object|null>} Initial stage or null
+   */
+  async getInitialStage(institutionId) {
+    try {
+      const institution = await TenantConfig.findOne({ institution_id: institutionId });
+
+      if (!institution?.enrollment_workflow?.stages) {
+        return null;
+      }
+
+      const workflow = institution.enrollment_workflow;
+      const initialStage = workflow.stages.find(s => s.is_initial === true);
+
+      if (!initialStage && workflow.default_initial_stage) {
+        return workflow.stages.find(s => s.stage_id === workflow.default_initial_stage);
+      }
+
+      return initialStage || workflow.stages[0];
+    } catch (error) {
+      console.error('Error getting initial stage:', error);
+      return null;
+    }
+  }
+  /**
    * Create a new enrollment
    */
   async create(enrollmentData) {
+    // Get initial stage from workflow if not provided
+    let initialStatus = enrollmentData.enrollment_status;
+
+    if (!initialStatus) {
+      const initialStage = await this.getInitialStage(enrollmentData.institution_id);
+      initialStatus = initialStage ? initialStage.status_key : 'interesado';
+    }
+
     const query = `
       INSERT INTO enrollments (
         institution_id, email, career_id, enrollment_id,
@@ -40,7 +172,7 @@ class EnrollmentRepository {
       enrollmentData.enrollment_period || `${new Date().getFullYear()}-1`,
       enrollmentData.prospection_date || new Date(),
       enrollmentData.prospection_source || 'web',
-      enrollmentData.enrollment_status || 'pendiente',
+      initialStatus,
       new Date(),
       enrollmentData.document_status || 'pendiente',
       enrollmentData.payment_status || 'pendiente',
@@ -54,7 +186,8 @@ class EnrollmentRepository {
     return {
       institution_id: enrollmentData.institution_id,
       email: enrollmentData.email,
-      career_id: enrollmentData.career_id
+      career_id: enrollmentData.career_id,
+      enrollment_status: initialStatus
     };
   }
 

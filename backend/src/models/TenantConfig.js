@@ -77,6 +77,27 @@ const tenantConfigSchema = new mongoose.Schema({
     contact: { email: String, phone: String }
   }],
 
+  enrollment_workflow: {
+    stages: [{
+      stage_id: { type: Number, required: true },
+      name: { type: String, required: true },
+      status_key: { type: String, required: true },
+      description: String,
+      color: String,
+      icon: String,
+      order: Number,
+      is_initial: { type: Boolean, default: false },
+      is_final: { type: Boolean, default: false },
+      requires_approval: { type: Boolean, default: false },
+      requires_documents: { type: Boolean, default: false },
+      requires_payment: { type: Boolean, default: false },
+      auto_advance: { type: Boolean, default: false },
+      next_stages: [Number],
+      allowed_roles: [String]
+    }],
+    default_initial_stage: Number
+  },
+
   dashboard: {
     tabs_enabled: [{
       id: { type: String, enum: ['prospection', 'admission', 'enrollment', 'relations'] },

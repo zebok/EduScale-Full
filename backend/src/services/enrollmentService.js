@@ -40,6 +40,8 @@ class EnrollmentService {
     }
 
     // Prepare enrollment data
+    // Note: enrollment_status will be set automatically by EnrollmentRepository
+    // based on the institution's workflow initial stage
     const enrollmentData = {
       institution_id: institucionId,
       email: email,
@@ -52,7 +54,7 @@ class EnrollmentService {
       enrollment_period: `${new Date().getFullYear()}-${Math.ceil((new Date().getMonth() + 1) / 6)}`,
       prospection_date: timestamp ? new Date(timestamp) : new Date(),
       prospection_source: source,
-      enrollment_status: 'interesado', // Initial state from Redis
+      // enrollment_status is NOT set here - Repository will use workflow's initial stage
       document_status: 'pendiente',
       payment_status: 'pendiente',
       created_by: 'system_worker'

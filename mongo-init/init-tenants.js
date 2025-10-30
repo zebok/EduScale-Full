@@ -106,6 +106,17 @@ db.tenantconfigs.insertMany([
                 contact: { email: "ingreso@derecho.uba.ar", phone: "+54 11 4809-5600" }
             }
         ],
+        enrollment_workflow: {
+            stages: [
+                { stage_id: 1, name: "Interés Registrado", status_key: "interesado", description: "El aspirante mostró interés inicial", color: "#3B82F6", icon: "user-plus", order: 1, is_initial: true, is_final: false, requires_approval: false, requires_documents: false, requires_payment: false, auto_advance: false, next_stages: [2], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 2, name: "Documentación Pendiente", status_key: "documentacion_pendiente", description: "Esperando que el alumno suba documentación", color: "#F59E0B", icon: "file-text", order: 2, is_initial: false, is_final: false, requires_approval: false, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [3, 6], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 3, name: "En Revisión", status_key: "en_revision", description: "Documentación siendo revisada por el comité", color: "#8B5CF6", icon: "search", order: 3, is_initial: false, is_final: false, requires_approval: true, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [4, 6], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 4, name: "Curso de Ingreso", status_key: "curso_ingreso", description: "Alumno cursando el CBC/curso de ingreso", color: "#10B981", icon: "book-open", order: 4, is_initial: false, is_final: false, requires_approval: false, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [5, 6], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 5, name: "Aceptado", status_key: "aceptado", description: "Aprobó el ingreso, puede matricularse", color: "#22C55E", icon: "check-circle", order: 5, is_initial: false, is_final: true, requires_approval: true, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 6, name: "Rechazado", status_key: "rechazado", description: "No cumplió con los requisitos", color: "#EF4444", icon: "x-circle", order: 6, is_initial: false, is_final: true, requires_approval: true, requires_documents: false, requires_payment: false, auto_advance: false, next_stages: [], allowed_roles: ["admin", "super_admin"] }
+            ],
+            default_initial_stage: 1
+        },
         dashboard: {
             tabs_enabled: [
                 { id: "prospection", name: "Declaración de Interés", phase: "A - Prospección", source: "redis", enabled: true, icon: "user-plus", order: 1, endpoint: "/api/prospection" },
@@ -215,6 +226,19 @@ db.tenantconfigs.insertMany([
                 contact: { email: "psicologia@uca.edu.ar", phone: "+54 11 4338-0750" }
             }
         ],
+        enrollment_workflow: {
+            stages: [
+                { stage_id: 1, name: "Consulta Inicial", status_key: "interesado", description: "El prospecto consultó sobre la carrera", color: "#3B82F6", icon: "user-plus", order: 1, is_initial: true, is_final: false, requires_approval: false, requires_documents: false, requires_payment: false, auto_advance: false, next_stages: [2], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 2, name: "Documentación Solicitada", status_key: "documentacion_pendiente", description: "Se solicitó documentación al postulante", color: "#F59E0B", icon: "file-text", order: 2, is_initial: false, is_final: false, requires_approval: false, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [3, 7], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 3, name: "Evaluación de Perfil", status_key: "en_revision", description: "Revisión de antecedentes y documentación", color: "#8B5CF6", icon: "search", order: 3, is_initial: false, is_final: false, requires_approval: true, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [4, 7], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 4, name: "Entrevista Programada", status_key: "entrevista_programada", description: "Entrevista personal agendada", color: "#6366F1", icon: "calendar", order: 4, is_initial: false, is_final: false, requires_approval: false, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [5, 7], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 5, name: "Evaluación de Beca", status_key: "evaluacion_beca", description: "Evaluando solicitud de beca (si aplica)", color: "#14B8A6", icon: "dollar-sign", order: 5, is_initial: false, is_final: false, requires_approval: true, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [6, 7], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 6, name: "Admitido", status_key: "aceptado", description: "Admitido, pendiente de pago de matrícula", color: "#22C55E", icon: "check-circle", order: 6, is_initial: false, is_final: false, requires_approval: true, requires_documents: true, requires_payment: true, auto_advance: false, next_stages: [8], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 7, name: "Rechazado", status_key: "rechazado", description: "No admitido", color: "#EF4444", icon: "x-circle", order: 7, is_initial: false, is_final: true, requires_approval: true, requires_documents: false, requires_payment: false, auto_advance: false, next_stages: [], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 8, name: "Matriculado", status_key: "matriculado", description: "Pago realizado, alumno matriculado", color: "#059669", icon: "award", order: 8, is_initial: false, is_final: true, requires_approval: false, requires_documents: true, requires_payment: true, auto_advance: false, next_stages: [], allowed_roles: ["admin", "super_admin"] }
+            ],
+            default_initial_stage: 1
+        },
         dashboard: {
             tabs_enabled: [
                 { id: "prospection", name: "Consultas", phase: "A - Prospección", source: "redis", enabled: true, icon: "user-plus", order: 1, endpoint: "/api/prospection" },
@@ -299,6 +323,19 @@ db.tenantconfigs.insertMany([
                 contact: { email: "informatica@itba.edu.ar", phone: "+54 11 3754-4800" }
             }
         ],
+        enrollment_workflow: {
+            stages: [
+                { stage_id: 1, name: "Consulta Inicial", status_key: "interesado", description: "El prospecto consultó sobre la carrera", color: "#3B82F6", icon: "user-plus", order: 1, is_initial: true, is_final: false, requires_approval: false, requires_documents: false, requires_payment: false, auto_advance: false, next_stages: [2], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 2, name: "Documentación Solicitada", status_key: "documentacion_pendiente", description: "Se solicitó documentación al postulante", color: "#F59E0B", icon: "file-text", order: 2, is_initial: false, is_final: false, requires_approval: false, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [3, 7], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 3, name: "Evaluación de Perfil", status_key: "en_revision", description: "Revisión de antecedentes y documentación", color: "#8B5CF6", icon: "search", order: 3, is_initial: false, is_final: false, requires_approval: true, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [4, 7], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 4, name: "Entrevista Programada", status_key: "entrevista_programada", description: "Entrevista personal agendada", color: "#6366F1", icon: "calendar", order: 4, is_initial: false, is_final: false, requires_approval: false, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [5, 7], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 5, name: "Evaluación de Beca", status_key: "evaluacion_beca", description: "Evaluando solicitud de beca (si aplica)", color: "#14B8A6", icon: "dollar-sign", order: 5, is_initial: false, is_final: false, requires_approval: true, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [6, 7], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 6, name: "Admitido", status_key: "aceptado", description: "Admitido, pendiente de pago de matrícula", color: "#22C55E", icon: "check-circle", order: 6, is_initial: false, is_final: false, requires_approval: true, requires_documents: true, requires_payment: true, auto_advance: false, next_stages: [8], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 7, name: "Rechazado", status_key: "rechazado", description: "No admitido", color: "#EF4444", icon: "x-circle", order: 7, is_initial: false, is_final: true, requires_approval: true, requires_documents: false, requires_payment: false, auto_advance: false, next_stages: [], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 8, name: "Matriculado", status_key: "matriculado", description: "Pago realizado, alumno matriculado", color: "#059669", icon: "award", order: 8, is_initial: false, is_final: true, requires_approval: false, requires_documents: true, requires_payment: true, auto_advance: false, next_stages: [], allowed_roles: ["admin", "super_admin"] }
+            ],
+            default_initial_stage: 1
+        },
         dashboard: {
             tabs_enabled: [
                 { id: "prospection", name: "Interesados", phase: "A - Prospección", source: "redis", enabled: true, icon: "user-plus", order: 1, endpoint: "/api/prospection" },
@@ -383,6 +420,17 @@ db.tenantconfigs.insertMany([
                 contact: { email: "isi@frba.utn.edu.ar", phone: "+54 11 4867-7500" }
             }
         ],
+        enrollment_workflow: {
+            stages: [
+                { stage_id: 1, name: "Interés Registrado", status_key: "interesado", description: "El aspirante mostró interés inicial", color: "#3B82F6", icon: "user-plus", order: 1, is_initial: true, is_final: false, requires_approval: false, requires_documents: false, requires_payment: false, auto_advance: false, next_stages: [2], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 2, name: "Documentación Pendiente", status_key: "documentacion_pendiente", description: "Esperando que el alumno suba documentación", color: "#F59E0B", icon: "file-text", order: 2, is_initial: false, is_final: false, requires_approval: false, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [3, 6], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 3, name: "En Revisión", status_key: "en_revision", description: "Documentación siendo revisada por el comité", color: "#8B5CF6", icon: "search", order: 3, is_initial: false, is_final: false, requires_approval: true, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [4, 6], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 4, name: "Curso de Ingreso", status_key: "curso_ingreso", description: "Alumno cursando el CBC/curso de ingreso", color: "#10B981", icon: "book-open", order: 4, is_initial: false, is_final: false, requires_approval: false, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [5, 6], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 5, name: "Aceptado", status_key: "aceptado", description: "Aprobó el ingreso, puede matricularse", color: "#22C55E", icon: "check-circle", order: 5, is_initial: false, is_final: true, requires_approval: true, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 6, name: "Rechazado", status_key: "rechazado", description: "No cumplió con los requisitos", color: "#EF4444", icon: "x-circle", order: 6, is_initial: false, is_final: true, requires_approval: true, requires_documents: false, requires_payment: false, auto_advance: false, next_stages: [], allowed_roles: ["admin", "super_admin"] }
+            ],
+            default_initial_stage: 1
+        },
         dashboard: {
             tabs_enabled: [
                 { id: "prospection", name: "Pre-inscripción", phase: "A - Prospección", source: "redis", enabled: true, icon: "user-plus", order: 1, endpoint: "/api/prospection" },
@@ -468,6 +516,19 @@ db.tenantconfigs.insertMany([
                 contact: { email: "diseno@palermo.edu", phone: "+54 11 5199-4520" }
             }
         ],
+        enrollment_workflow: {
+            stages: [
+                { stage_id: 1, name: "Consulta Inicial", status_key: "interesado", description: "El prospecto consultó sobre la carrera", color: "#3B82F6", icon: "user-plus", order: 1, is_initial: true, is_final: false, requires_approval: false, requires_documents: false, requires_payment: false, auto_advance: false, next_stages: [2], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 2, name: "Documentación Solicitada", status_key: "documentacion_pendiente", description: "Se solicitó documentación al postulante", color: "#F59E0B", icon: "file-text", order: 2, is_initial: false, is_final: false, requires_approval: false, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [3, 7], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 3, name: "Evaluación de Perfil", status_key: "en_revision", description: "Revisión de antecedentes y documentación", color: "#8B5CF6", icon: "search", order: 3, is_initial: false, is_final: false, requires_approval: true, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [4, 7], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 4, name: "Entrevista Programada", status_key: "entrevista_programada", description: "Entrevista personal agendada", color: "#6366F1", icon: "calendar", order: 4, is_initial: false, is_final: false, requires_approval: false, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [5, 7], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 5, name: "Evaluación de Beca", status_key: "evaluacion_beca", description: "Evaluando solicitud de beca (si aplica)", color: "#14B8A6", icon: "dollar-sign", order: 5, is_initial: false, is_final: false, requires_approval: true, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [6, 7], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 6, name: "Admitido", status_key: "aceptado", description: "Admitido, pendiente de pago de matrícula", color: "#22C55E", icon: "check-circle", order: 6, is_initial: false, is_final: false, requires_approval: true, requires_documents: true, requires_payment: true, auto_advance: false, next_stages: [8], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 7, name: "Rechazado", status_key: "rechazado", description: "No admitido", color: "#EF4444", icon: "x-circle", order: 7, is_initial: false, is_final: true, requires_approval: true, requires_documents: false, requires_payment: false, auto_advance: false, next_stages: [], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 8, name: "Matriculado", status_key: "matriculado", description: "Pago realizado, alumno matriculado", color: "#059669", icon: "award", order: 8, is_initial: false, is_final: true, requires_approval: false, requires_documents: true, requires_payment: true, auto_advance: false, next_stages: [], allowed_roles: ["admin", "super_admin"] }
+            ],
+            default_initial_stage: 1
+        },
         dashboard: {
             tabs_enabled: [
                 { id: "prospection", name: "Futuros Estudiantes", phase: "A - Prospección", source: "redis", enabled: true, icon: "user-plus", order: 1, endpoint: "/api/prospection" },
@@ -552,6 +613,17 @@ db.tenantconfigs.insertMany([
                 contact: { email: "info@info.unlp.edu.ar", phone: "+54 221 422-8252" }
             }
         ],
+        enrollment_workflow: {
+            stages: [
+                { stage_id: 1, name: "Interés Registrado", status_key: "interesado", description: "El aspirante mostró interés inicial", color: "#3B82F6", icon: "user-plus", order: 1, is_initial: true, is_final: false, requires_approval: false, requires_documents: false, requires_payment: false, auto_advance: false, next_stages: [2], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 2, name: "Documentación Pendiente", status_key: "documentacion_pendiente", description: "Esperando que el alumno suba documentación", color: "#F59E0B", icon: "file-text", order: 2, is_initial: false, is_final: false, requires_approval: false, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [3, 6], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 3, name: "En Revisión", status_key: "en_revision", description: "Documentación siendo revisada por el comité", color: "#8B5CF6", icon: "search", order: 3, is_initial: false, is_final: false, requires_approval: true, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [4, 6], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 4, name: "Curso de Ingreso", status_key: "curso_ingreso", description: "Alumno cursando el CBC/curso de ingreso", color: "#10B981", icon: "book-open", order: 4, is_initial: false, is_final: false, requires_approval: false, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [5, 6], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 5, name: "Aceptado", status_key: "aceptado", description: "Aprobó el ingreso, puede matricularse", color: "#22C55E", icon: "check-circle", order: 5, is_initial: false, is_final: true, requires_approval: true, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 6, name: "Rechazado", status_key: "rechazado", description: "No cumplió con los requisitos", color: "#EF4444", icon: "x-circle", order: 6, is_initial: false, is_final: true, requires_approval: true, requires_documents: false, requires_payment: false, auto_advance: false, next_stages: [], allowed_roles: ["admin", "super_admin"] }
+            ],
+            default_initial_stage: 1
+        },
         dashboard: {
             tabs_enabled: [
                 { id: "prospection", name: "Aspirantes", phase: "A - Prospección", source: "redis", enabled: true, icon: "user-plus", order: 1, endpoint: "/api/prospection" },
@@ -637,6 +709,19 @@ db.tenantconfigs.insertMany([
                 contact: { email: "administracion@uade.edu.ar", phone: "+54 11 4000-7620" }
             }
         ],
+        enrollment_workflow: {
+            stages: [
+                { stage_id: 1, name: "Consulta Inicial", status_key: "interesado", description: "El prospecto consultó sobre la carrera", color: "#3B82F6", icon: "user-plus", order: 1, is_initial: true, is_final: false, requires_approval: false, requires_documents: false, requires_payment: false, auto_advance: false, next_stages: [2], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 2, name: "Documentación Solicitada", status_key: "documentacion_pendiente", description: "Se solicitó documentación al postulante", color: "#F59E0B", icon: "file-text", order: 2, is_initial: false, is_final: false, requires_approval: false, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [3, 7], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 3, name: "Evaluación de Perfil", status_key: "en_revision", description: "Revisión de antecedentes y documentación", color: "#8B5CF6", icon: "search", order: 3, is_initial: false, is_final: false, requires_approval: true, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [4, 7], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 4, name: "Entrevista Programada", status_key: "entrevista_programada", description: "Entrevista personal agendada", color: "#6366F1", icon: "calendar", order: 4, is_initial: false, is_final: false, requires_approval: false, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [5, 7], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 5, name: "Evaluación de Beca", status_key: "evaluacion_beca", description: "Evaluando solicitud de beca (si aplica)", color: "#14B8A6", icon: "dollar-sign", order: 5, is_initial: false, is_final: false, requires_approval: true, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [6, 7], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 6, name: "Admitido", status_key: "aceptado", description: "Admitido, pendiente de pago de matrícula", color: "#22C55E", icon: "check-circle", order: 6, is_initial: false, is_final: false, requires_approval: true, requires_documents: true, requires_payment: true, auto_advance: false, next_stages: [8], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 7, name: "Rechazado", status_key: "rechazado", description: "No admitido", color: "#EF4444", icon: "x-circle", order: 7, is_initial: false, is_final: true, requires_approval: true, requires_documents: false, requires_payment: false, auto_advance: false, next_stages: [], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 8, name: "Matriculado", status_key: "matriculado", description: "Pago realizado, alumno matriculado", color: "#059669", icon: "award", order: 8, is_initial: false, is_final: true, requires_approval: false, requires_documents: true, requires_payment: true, auto_advance: false, next_stages: [], allowed_roles: ["admin", "super_admin"] }
+            ],
+            default_initial_stage: 1
+        },
         dashboard: {
             tabs_enabled: [
                 { id: "prospection", name: "Interesados", phase: "A - Prospección", source: "redis", enabled: true, icon: "user-plus", order: 1, endpoint: "/api/prospection" },
@@ -721,6 +806,19 @@ db.tenantconfigs.insertMany([
                 contact: { email: "medicina@austral.edu.ar", phone: "+54 230 448-2100" }
             }
         ],
+        enrollment_workflow: {
+            stages: [
+                { stage_id: 1, name: "Consulta Inicial", status_key: "interesado", description: "El prospecto consultó sobre la carrera", color: "#3B82F6", icon: "user-plus", order: 1, is_initial: true, is_final: false, requires_approval: false, requires_documents: false, requires_payment: false, auto_advance: false, next_stages: [2], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 2, name: "Documentación Solicitada", status_key: "documentacion_pendiente", description: "Se solicitó documentación al postulante", color: "#F59E0B", icon: "file-text", order: 2, is_initial: false, is_final: false, requires_approval: false, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [3, 7], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 3, name: "Evaluación de Perfil", status_key: "en_revision", description: "Revisión de antecedentes y documentación", color: "#8B5CF6", icon: "search", order: 3, is_initial: false, is_final: false, requires_approval: true, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [4, 7], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 4, name: "Entrevista Programada", status_key: "entrevista_programada", description: "Entrevista personal agendada", color: "#6366F1", icon: "calendar", order: 4, is_initial: false, is_final: false, requires_approval: false, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [5, 7], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 5, name: "Evaluación de Beca", status_key: "evaluacion_beca", description: "Evaluando solicitud de beca (si aplica)", color: "#14B8A6", icon: "dollar-sign", order: 5, is_initial: false, is_final: false, requires_approval: true, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [6, 7], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 6, name: "Admitido", status_key: "aceptado", description: "Admitido, pendiente de pago de matrícula", color: "#22C55E", icon: "check-circle", order: 6, is_initial: false, is_final: false, requires_approval: true, requires_documents: true, requires_payment: true, auto_advance: false, next_stages: [8], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 7, name: "Rechazado", status_key: "rechazado", description: "No admitido", color: "#EF4444", icon: "x-circle", order: 7, is_initial: false, is_final: true, requires_approval: true, requires_documents: false, requires_payment: false, auto_advance: false, next_stages: [], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 8, name: "Matriculado", status_key: "matriculado", description: "Pago realizado, alumno matriculado", color: "#059669", icon: "award", order: 8, is_initial: false, is_final: true, requires_approval: false, requires_documents: true, requires_payment: true, auto_advance: false, next_stages: [], allowed_roles: ["admin", "super_admin"] }
+            ],
+            default_initial_stage: 1
+        },
         dashboard: {
             tabs_enabled: [
                 { id: "prospection", name: "Consultas", phase: "A - Prospección", source: "redis", enabled: true, icon: "user-plus", order: 1, endpoint: "/api/prospection" },
@@ -805,6 +903,19 @@ db.tenantconfigs.insertMany([
                 contact: { email: "economia@utdt.edu", phone: "+54 11 5169-7100" }
             }
         ],
+        enrollment_workflow: {
+            stages: [
+                { stage_id: 1, name: "Consulta Inicial", status_key: "interesado", description: "El prospecto consultó sobre la carrera", color: "#3B82F6", icon: "user-plus", order: 1, is_initial: true, is_final: false, requires_approval: false, requires_documents: false, requires_payment: false, auto_advance: false, next_stages: [2], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 2, name: "Documentación Solicitada", status_key: "documentacion_pendiente", description: "Se solicitó documentación al postulante", color: "#F59E0B", icon: "file-text", order: 2, is_initial: false, is_final: false, requires_approval: false, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [3, 7], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 3, name: "Evaluación de Perfil", status_key: "en_revision", description: "Revisión de antecedentes y documentación", color: "#8B5CF6", icon: "search", order: 3, is_initial: false, is_final: false, requires_approval: true, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [4, 7], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 4, name: "Entrevista Programada", status_key: "entrevista_programada", description: "Entrevista personal agendada", color: "#6366F1", icon: "calendar", order: 4, is_initial: false, is_final: false, requires_approval: false, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [5, 7], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 5, name: "Evaluación de Beca", status_key: "evaluacion_beca", description: "Evaluando solicitud de beca (si aplica)", color: "#14B8A6", icon: "dollar-sign", order: 5, is_initial: false, is_final: false, requires_approval: true, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [6, 7], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 6, name: "Admitido", status_key: "aceptado", description: "Admitido, pendiente de pago de matrícula", color: "#22C55E", icon: "check-circle", order: 6, is_initial: false, is_final: false, requires_approval: true, requires_documents: true, requires_payment: true, auto_advance: false, next_stages: [8], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 7, name: "Rechazado", status_key: "rechazado", description: "No admitido", color: "#EF4444", icon: "x-circle", order: 7, is_initial: false, is_final: true, requires_approval: true, requires_documents: false, requires_payment: false, auto_advance: false, next_stages: [], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 8, name: "Matriculado", status_key: "matriculado", description: "Pago realizado, alumno matriculado", color: "#059669", icon: "award", order: 8, is_initial: false, is_final: true, requires_approval: false, requires_documents: true, requires_payment: true, auto_advance: false, next_stages: [], allowed_roles: ["admin", "super_admin"] }
+            ],
+            default_initial_stage: 1
+        },
         dashboard: {
             tabs_enabled: [
                 { id: "prospection", name: "Prospectos", phase: "A - Prospección", source: "redis", enabled: true, icon: "user-plus", order: 1, endpoint: "/api/prospection" },
@@ -889,6 +1000,17 @@ db.tenantconfigs.insertMany([
                 contact: { email: "info@fcm.unc.edu.ar", phone: "+54 351 433-4042" }
             }
         ],
+        enrollment_workflow: {
+            stages: [
+                { stage_id: 1, name: "Interés Registrado", status_key: "interesado", description: "El aspirante mostró interés inicial", color: "#3B82F6", icon: "user-plus", order: 1, is_initial: true, is_final: false, requires_approval: false, requires_documents: false, requires_payment: false, auto_advance: false, next_stages: [2], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 2, name: "Documentación Pendiente", status_key: "documentacion_pendiente", description: "Esperando que el alumno suba documentación", color: "#F59E0B", icon: "file-text", order: 2, is_initial: false, is_final: false, requires_approval: false, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [3, 6], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 3, name: "En Revisión", status_key: "en_revision", description: "Documentación siendo revisada por el comité", color: "#8B5CF6", icon: "search", order: 3, is_initial: false, is_final: false, requires_approval: true, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [4, 6], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 4, name: "Curso de Ingreso", status_key: "curso_ingreso", description: "Alumno cursando el CBC/curso de ingreso", color: "#10B981", icon: "book-open", order: 4, is_initial: false, is_final: false, requires_approval: false, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [5, 6], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 5, name: "Aceptado", status_key: "aceptado", description: "Aprobó el ingreso, puede matricularse", color: "#22C55E", icon: "check-circle", order: 5, is_initial: false, is_final: true, requires_approval: true, requires_documents: true, requires_payment: false, auto_advance: false, next_stages: [], allowed_roles: ["admin", "super_admin"] },
+                { stage_id: 6, name: "Rechazado", status_key: "rechazado", description: "No cumplió con los requisitos", color: "#EF4444", icon: "x-circle", order: 6, is_initial: false, is_final: true, requires_approval: true, requires_documents: false, requires_payment: false, auto_advance: false, next_stages: [], allowed_roles: ["admin", "super_admin"] }
+            ],
+            default_initial_stage: 1
+        },
         dashboard: {
             tabs_enabled: [
                 { id: "prospection", name: "Aspirantes", phase: "A - Prospección", source: "redis", enabled: true, icon: "user-plus", order: 1, endpoint: "/api/prospection" },

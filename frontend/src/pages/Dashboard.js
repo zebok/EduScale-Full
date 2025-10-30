@@ -1,10 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import WorkflowPipeline from '../components/WorkflowPipeline';
+import enrollmentService from '../services/enrollmentService';
 import './Dashboard.css';
 
 function Dashboard() {
   const { user, tenantConfig, logout } = useAuth();
+  const [stats, setStats] = useState(null);
+  const [showWorkflow, setShowWorkflow] = useState(false);
+  const [loadingStats, setLoadingStats] = useState(true);
+
+  useEffect(() => {
+    if (user?.tenant_id) {
+      loadStats();
+    }
+  }, [user]);
+
+  const loadStats = async () => {
+    try {
+      setLoadingStats(true);
+
+      // Debug: verificar que tenemos el token
+      const token = localStorage.getItem('token');
+      console.log('🔑 Token disponible:', token ? 'Sí' : 'No');
+      console.log('👤 User tenant_id:', user?.tenant_id);
+
+      const statsData = await enrollmentService.getStats(user.tenant_id);
+      setStats(statsData.stats);
+    } catch (error) {
+      console.error('Error loading stats:', error);
+      console.error('Error details:', error.response?.data);
+    } finally {
+      setLoadingStats(false);
+    }
+  };
 
   if (!tenantConfig) {
     return (
@@ -46,46 +76,93 @@ function Dashboard() {
         <div className="welcome-section">
           <h2>Bienvenido, {user?.nombre}!</h2>
           <p>{tenantConfig.texts?.welcome?.description || 'Gestiona las admisiones de tu institución'}</p>
-        </div>
 
-        <div className="tabs-section">
-          <h3>Módulos Disponibles</h3>
-          <div className="tabs-grid">
-            {enabledTabs.map((tab) => (
-              <div key={tab.id} className="tab-card">
-                <div className="tab-header">
-                  <span className="tab-icon">{getTabIcon(tab.id)}</span>
-                  <h4>{tab.name}</h4>
-                </div>
-                <p className="tab-fase">{tab.phase}</p>
-                <p className="tab-fuente">Base de datos: <strong>{tab.source.toUpperCase()}</strong></p>
-                <Link to={tab.endpoint} className="tab-button">
-                  Ver {tab.name}
-                </Link>
+          {/* Workflow Stats Cards */}
+          {!loadingStats && stats?.by_stage && (
+            <div className="workflow-stats-cards">
+              <h3>Estado de Inscripciones por Etapa</h3>
+              <div className="stats-grid">
+                {Object.entries(stats.by_stage).map(([statusKey, stageData]) => (
+                  <div
+                    key={statusKey}
+                    className="stat-card"
+                    style={{ borderLeftColor: stageData.color }}
+                  >
+                    <div className="stat-icon">{stageData.icon}</div>
+                    <div className="stat-content">
+                      <h4>{stageData.name}</h4>
+                      <div className="stat-numbers">
+                        <span className="stat-count">{stageData.count}</span>
+                        <span className="stat-percentage">{stageData.percentage}%</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          )}
         </div>
 
-        <div className="info-section">
-          <div className="info-card">
-            <h4>Información de la Institución</h4>
-            <div className="info-details">
-              <p><strong>Nombre Completo:</strong> {institution?.name}</p>
-              <p><strong>Tipo:</strong> {formatTipo(institution?.type)}</p>
-              <p><strong>Ubicación:</strong> {institution?.city}, {institution?.country}</p>
-            </div>
-          </div>
-
-          <div className="info-card">
-            <h4>Tu Cuenta</h4>
-            <div className="info-details">
-              <p><strong>Email:</strong> {user?.email}</p>
-              <p><strong>Tenant ID:</strong> {user?.tenant_id}</p>
-              <p><strong>Permisos:</strong> {user?.permisos?.join(', ')}</p>
-            </div>
-          </div>
+        {/* Toggle between modules and workflow */}
+        <div className="view-toggle">
+          <button
+            className={`toggle-btn ${!showWorkflow ? 'active' : ''}`}
+            onClick={() => setShowWorkflow(false)}
+          >
+            📊 Módulos
+          </button>
+          <button
+            className={`toggle-btn ${showWorkflow ? 'active' : ''}`}
+            onClick={() => setShowWorkflow(true)}
+          >
+            🔄 Pipeline de Inscripciones
+          </button>
         </div>
+
+        {!showWorkflow ? (
+          <>
+            <div className="tabs-section">
+              <h3>Módulos Disponibles</h3>
+              <div className="tabs-grid">
+                {enabledTabs.map((tab) => (
+                  <div key={tab.id} className="tab-card">
+                    <div className="tab-header">
+                      <span className="tab-icon">{getTabIcon(tab.id)}</span>
+                      <h4>{tab.name}</h4>
+                    </div>
+                    <p className="tab-fase">{tab.phase}</p>
+                    <p className="tab-fuente">Base de datos: <strong>{tab.source.toUpperCase()}</strong></p>
+                    <Link to={tab.endpoint} className="tab-button">
+                      Ver {tab.name}
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="info-section">
+              <div className="info-card">
+                <h4>Información de la Institución</h4>
+                <div className="info-details">
+                  <p><strong>Nombre Completo:</strong> {institution?.name}</p>
+                  <p><strong>Tipo:</strong> {formatTipo(institution?.type)}</p>
+                  <p><strong>Ubicación:</strong> {institution?.city}, {institution?.country}</p>
+                </div>
+              </div>
+
+              <div className="info-card">
+                <h4>Tu Cuenta</h4>
+                <div className="info-details">
+                  <p><strong>Email:</strong> {user?.email}</p>
+                  <p><strong>Tenant ID:</strong> {user?.tenant_id}</p>
+                  <p><strong>Permisos:</strong> {user?.permisos?.join(', ')}</p>
+                </div>
+              </div>
+            </div>
+          </>
+        ) : (
+          <WorkflowPipeline />
+        )}
       </div>
 
       <footer className="dashboard-footer">

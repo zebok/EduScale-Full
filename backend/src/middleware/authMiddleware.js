@@ -89,6 +89,12 @@ const authMiddleware = async (req, res, next) => {
       permisos: sessionData.permisos
     };
 
+    console.log('✅ Auth middleware: User authenticated', {
+      email: req.user.email,
+      tenant_id: req.user.tenant_id,
+      rol: req.user.rol
+    });
+
     next();
   } catch (error) {
     console.error('Error en authMiddleware:', error);

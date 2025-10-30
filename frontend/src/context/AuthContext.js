@@ -11,19 +11,43 @@ export const AuthProvider = ({ children }) => {
   const API_URL = 'http://localhost:5001/api';
 
   useEffect(() => {
+    // Configurar interceptor de axios para agregar token a todas las peticiones
+    const requestInterceptor = axios.interceptors.request.use(
+      (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+          config.headers['Authorization'] = `Bearer ${token}`;
+          console.log('🔐 Interceptor: Token agregado a la petición', config.url);
+        } else {
+          console.warn('⚠️ Interceptor: No hay token disponible para', config.url);
+        }
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
+
     // Verificar si hay un token guardado al cargar la app
     const token = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user');
 
     if (token && savedUser) {
       setUser(JSON.parse(savedUser));
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-      // Cargar configuración del tenant
-      loadTenantConfig(JSON.parse(savedUser).tenant_id);
+      // Cargar configuración del tenant (solo para admins regulares)
+      const userData = JSON.parse(savedUser);
+      if (userData.rol !== 'super_admin') {
+        loadTenantConfig(userData.tenant_id);
+      }
     }
 
     setLoading(false);
+
+    // Cleanup interceptor on unmount
+    return () => {
+      axios.interceptors.request.eject(requestInterceptor);
+    };
   }, []);
 
   const loadTenantConfig = async (tenantId) => {
@@ -48,9 +72,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(userData));
 
-      // Configurar axios para usar el token en todas las peticiones
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
+      // El token será agregado automáticamente por el interceptor
       setUser(userData);
 
       // Si es super_admin, no cargar configuración de tenant
