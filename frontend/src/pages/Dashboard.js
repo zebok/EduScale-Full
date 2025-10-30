@@ -173,16 +173,6 @@ function Dashboard() {
   );
 }
 
-function getTabIcon(tabId) {
-  const icons = {
-    prospection: '👥',
-    admission: '📄',
-    enrollment: '✅',
-    relations: '🔗'
-  };
-  return icons[tabId] || '📊';
-}
-
 function formatTipo(tipo) {
   const tipos = {
     universidad_publica: 'Universidad Pública',

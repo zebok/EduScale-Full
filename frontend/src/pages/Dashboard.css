@@ -142,14 +142,7 @@
 }
 
 .tab-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
   margin-bottom: 16px;
-}
-
-.tab-icon {
-  font-size: 2rem;
 }
 
 .tab-header h4 {
@@ -267,10 +260,7 @@
   border: 1px solid #e0e0e0;
   border-left: 4px solid #667eea;
   border-radius: 8px;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  padding: 16px 20px;
   transition: all 0.3s;
 }
 
@@ -279,12 +269,8 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.stat-icon {
-  font-size: 32px;
-}
-
 .stat-content {
-  flex: 1;
+  width: 100%;
 }
 
 .stat-content h4 {
