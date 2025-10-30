@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import WorkflowPipeline from '../components/WorkflowPipeline';
 import enrollmentService from '../services/enrollmentService';
@@ -8,7 +7,6 @@ import './Dashboard.css';
 function Dashboard() {
   const { user, tenantConfig, logout } = useAuth();
   const [stats, setStats] = useState(null);
-  const [showWorkflow, setShowWorkflow] = useState(false);
   const [loadingStats, setLoadingStats] = useState(true);
 
   useEffect(() => {
@@ -44,9 +42,7 @@ function Dashboard() {
     );
   }
 
-  const { institution, branding, dashboard } = tenantConfig;
-  const tabs = dashboard?.tabs_enabled || [];
-  const enabledTabs = tabs.filter(tab => tab.enabled).sort((a, b) => a.order - b.order);
+  const { institution, branding } = tenantConfig;
 
   return (
     <div className="dashboard-container" style={{
@@ -95,7 +91,6 @@ function Dashboard() {
                         <h4>{stageData.name}</h4>
                         <div className="stat-numbers">
                           <span className="stat-count">{stageData.count}</span>
-                          <span className="stat-percentage">{stageData.percentage}%</span>
                         </div>
                       </div>
                     </div>
@@ -105,65 +100,8 @@ function Dashboard() {
           )}
         </div>
 
-        {/* Toggle between modules and workflow */}
-        <div className="view-toggle">
-          <button
-            className={`toggle-btn ${!showWorkflow ? 'active' : ''}`}
-            onClick={() => setShowWorkflow(false)}
-          >
-            Módulos
-          </button>
-          <button
-            className={`toggle-btn ${showWorkflow ? 'active' : ''}`}
-            onClick={() => setShowWorkflow(true)}
-          >
-            Pipeline de Inscripciones
-          </button>
-        </div>
-
-        {!showWorkflow ? (
-          <>
-            <div className="tabs-section">
-              <h3>Módulos Disponibles</h3>
-              <div className="tabs-grid">
-                {enabledTabs.map((tab) => (
-                  <div key={tab.id} className="tab-card">
-                    <div className="tab-header">
-                      <h4>{tab.name}</h4>
-                    </div>
-                    <p className="tab-fase">{tab.phase}</p>
-                    <p className="tab-fuente">Base de datos: <strong>{tab.source.toUpperCase()}</strong></p>
-                    <Link to={tab.endpoint} className="tab-button">
-                      Ver {tab.name}
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="info-section">
-              <div className="info-card">
-                <h4>Información de la Institución</h4>
-                <div className="info-details">
-                  <p><strong>Nombre Completo:</strong> {institution?.name}</p>
-                  <p><strong>Tipo:</strong> {formatTipo(institution?.type)}</p>
-                  <p><strong>Ubicación:</strong> {institution?.city}, {institution?.country}</p>
-                </div>
-              </div>
-
-              <div className="info-card">
-                <h4>Tu Cuenta</h4>
-                <div className="info-details">
-                  <p><strong>Email:</strong> {user?.email}</p>
-                  <p><strong>Tenant ID:</strong> {user?.tenant_id}</p>
-                  <p><strong>Permisos:</strong> {user?.permisos?.join(', ')}</p>
-                </div>
-              </div>
-            </div>
-          </>
-        ) : (
-          <WorkflowPipeline />
-        )}
+        {/* WorkflowPipeline - siempre visible */}
+        <WorkflowPipeline />
       </div>
 
       <footer className="dashboard-footer">

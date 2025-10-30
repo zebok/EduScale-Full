@@ -7,10 +7,6 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import MinisterioDashboard from './pages/MinisterioDashboard';
 import ApplicationForm from './pages/ApplicationForm';
-import Prospection from './components/Prospection';
-import Admission from './components/Admission';
-import Enrollment from './components/Enrollment';
-import Relations from './components/Relations';
 import MoreInfo from './pages/MoreInfo';
 import './App.css';
 
@@ -31,26 +27,6 @@ function App() {
           <Route path="/ministerio" element={
             <PrivateRoute>
               <MinisterioDashboard />
-            </PrivateRoute>
-          } />
-          <Route path="/api/prospection" element={
-            <PrivateRoute>
-              <Prospection />
-            </PrivateRoute>
-          } />
-          <Route path="/api/admission" element={
-            <PrivateRoute>
-              <Admission />
-            </PrivateRoute>
-          } />
-          <Route path="/api/enrollment" element={
-            <PrivateRoute>
-              <Enrollment />
-            </PrivateRoute>
-          } />
-          <Route path="/api/relations" element={
-            <PrivateRoute>
-              <Relations />
             </PrivateRoute>
           } />
         </Routes>
