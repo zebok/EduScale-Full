@@ -55,7 +55,7 @@ export default function MoreInfo() {
 
   const [filters, setFilters] = useState({ province: '', degreeType: '', duration: '' });
   const [search, setSearch] = useState('');
-  const [showCategory, setShowCategory] = useState(true);
+  // Category select is always visible now
 
   const [modalState, setModalState] = useState({ visible: false, careers: [], name: '' });
 
@@ -124,7 +124,6 @@ export default function MoreInfo() {
     <div className="mi-page">
       <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
         <button onClick={() => navigate('/')} className="mi-back-button">← Volver al inicio</button>
-        <button onClick={() => setShowCategory(s => !s)} className="mi-category-button">Categoría</button>
         <button onClick={() => { setFilters({ province: '', degreeType: '', duration: '' }); setSearch(''); }} className="mi-reset-button">Reset filtros</button>
       </div>
       <header className="mi-header">
@@ -142,12 +141,10 @@ export default function MoreInfo() {
           <option value="">Cualquier duración</option>
           {durations.map(d => <option key={d} value={d}>{d} años</option>)}
         </select>
-        {showCategory && (
-          <select value={filters.degreeType} onChange={e=>setFilters({...filters, degreeType: e.target.value})}>
-            <option value="">Todas las modalidades</option>
-            {degreeTypes.map(d => <option key={d} value={d}>{d}</option>)}
-          </select>
-        )}
+        <select value={filters.degreeType} onChange={e=>setFilters({...filters, degreeType: e.target.value})}>
+          <option value="">Todas las modalidades</option>
+          {degreeTypes.map(d => <option key={d} value={d}>{d}</option>)}
+        </select>
       </section>
 
       <section className="mi-list">

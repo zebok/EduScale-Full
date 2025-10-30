@@ -23,9 +23,8 @@ const Home = () => {
           <h1>Bienvenido a EduScale</h1>
           <p>Impulsamos la experiencia universitaria con procesos simples y una plataforma que escala contigo.</p>
           <div className="hero-actions">
-            <Link className="home-button" to="/application-form">Completar formulario</Link>
-            <Link className="home-button home-button--secondary" to="/login">Ir al inicio de sesión</Link>
-            <Link className="home-button home-button--secondary" to="/more-info">Ver Universidades</Link>
+            <Link className="home-button" to="/more-info">Ver Universidades</Link>
+            <Link className="home-button home-button--secondary" to="/application-form">Completar formulario</Link>
           </div>
         </section>
 
