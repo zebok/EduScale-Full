@@ -50,7 +50,7 @@ router.get('/instituciones/:institucionId/carreras', async (req, res) => {
     res.json({
       institucion: institucion.institution.name,
       carreras: institucion.careers.map(carrera => ({
-        id: carrera._id,
+        id: carrera.career_id,
         career_id: carrera.career_id,
         nombre: carrera.name,
         codigo: carrera.code,
@@ -93,7 +93,7 @@ router.post('/', limiter, async (req, res) => {
       return res.status(400).json({ error: 'Institución no válida' });
     }
 
-    const carrera = institucion.careers.id(carreraId);
+    const carrera = institucion.careers.find(c => c.career_id === carreraId);
     if (!carrera) {
       return res.status(400).json({ error: 'Carrera no válida' });
     }
@@ -110,7 +110,6 @@ router.post('/', limiter, async (req, res) => {
         tipo: institucion.institution.type
       },
       carrera: {
-        id: carrera._id,
         career_id: carrera.career_id,
         nombre: carrera.name,
         codigo: carrera.code,
