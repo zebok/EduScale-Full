@@ -4,19 +4,6 @@ import enrollmentService from '../services/enrollmentService';
 import EnrollmentCard from './EnrollmentCard';
 import './WorkflowPipeline.css';
 
-// Mapeo de iconos a emojis
-const iconMap = {
-  'user-plus': '👤',
-  'file-text': '📄',
-  'search': '🔍',
-  'calendar': '📅',
-  'dollar-sign': '💰',
-  'check-circle': '✅',
-  'x-circle': '❌',
-  'award': '🏆',
-  'book-open': '📖'
-};
-
 const WorkflowPipeline = () => {
   const { user } = useAuth();
   const [workflow, setWorkflow] = useState(null);
@@ -159,7 +146,6 @@ const WorkflowPipeline = () => {
                 }}
                 onClick={() => setActiveStageId(stage.stage_id)}
               >
-                <span className="tab-icon">{iconMap[stage.icon] || stage.icon || '📋'}</span>
                 <div className="tab-info">
                   <span className="tab-name">{stage.name}</span>
                   <span className="tab-count">{stageCount}</span>

@@ -134,7 +134,7 @@ const EnrollmentCard = ({ enrollment, currentStage, nextStages, onAdvance, userR
 
             {currentStage.is_final && (
               <div className="final-stage-notice">
-                ✓ Esta inscripción está en una etapa final
+                Esta inscripción está en una etapa final
               </div>
             )}
           </div>
@@ -159,14 +159,14 @@ const EnrollmentCard = ({ enrollment, currentStage, nextStages, onAdvance, userR
               <div className="stage-transition">
                 <div className="transition-from">
                   <span style={{ color: currentStage.color }}>
-                    {currentStage.icon} {currentStage.name}
+                    {currentStage.name}
                   </span>
                 </div>
                 <div className="transition-arrow">→</div>
                 <div className="transition-to">
                   {nextStages.length === 1 ? (
                     <span style={{ color: nextStages[0].color }}>
-                      {nextStages[0].icon} {nextStages[0].name}
+                      {nextStages[0].name}
                     </span>
                   ) : (
                     <div className="next-stages-selector">
@@ -181,7 +181,7 @@ const EnrollmentCard = ({ enrollment, currentStage, nextStages, onAdvance, userR
                           }}
                           onClick={() => setSelectedNextStage(stage)}
                         >
-                          <span>{stage.icon} {stage.name}</span>
+                          <span>{stage.name}</span>
                           <p>{stage.description}</p>
                         </button>
                       ))}
@@ -202,7 +202,7 @@ const EnrollmentCard = ({ enrollment, currentStage, nextStages, onAdvance, userR
 
               {advanceError && (
                 <div className="modal-error">
-                  ⚠️ {advanceError}
+                  {advanceError}
                 </div>
               )}
             </div>

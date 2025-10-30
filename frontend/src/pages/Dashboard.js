@@ -5,19 +5,6 @@ import WorkflowPipeline from '../components/WorkflowPipeline';
 import enrollmentService from '../services/enrollmentService';
 import './Dashboard.css';
 
-// Mapeo de iconos a emojis
-const iconMap = {
-  'user-plus': '👤',
-  'file-text': '📄',
-  'search': '🔍',
-  'calendar': '📅',
-  'dollar-sign': '💰',
-  'check-circle': '✅',
-  'x-circle': '❌',
-  'award': '🏆',
-  'book-open': '📖'
-};
-
 function Dashboard() {
   const { user, tenantConfig, logout } = useAuth();
   const [stats, setStats] = useState(null);
@@ -70,7 +57,7 @@ function Dashboard() {
       <header className="dashboard-header">
         <div className="header-content">
           <div className="header-left">
-            <h1>🎓 {institution?.short_name || 'EduScale'}</h1>
+            <h1>{institution?.short_name || 'EduScale'}</h1>
             <p>{tenantConfig.texts?.welcome?.title || 'Panel de Administración'}</p>
           </div>
           <div className="header-right">
@@ -93,7 +80,7 @@ function Dashboard() {
           {/* Workflow Stats Cards */}
           {!loadingStats && stats?.by_stage && (
             <div className="workflow-stats-cards">
-              <h3>📊 Pipeline de Inscripciones - {stats.total} Total</h3>
+              <h3>Pipeline de Inscripciones - {stats.total} Total</h3>
               <div className="stats-grid">
                 {Object.entries(stats.by_stage)
                   .filter(([_, stageData]) => stageData.count > 0) // Solo mostrar etapas con inscripciones
@@ -104,7 +91,6 @@ function Dashboard() {
                       className="stat-card"
                       style={{ borderLeftColor: stageData.color }}
                     >
-                      <div className="stat-icon">{iconMap[stageData.icon] || stageData.icon}</div>
                       <div className="stat-content">
                         <h4>{stageData.name}</h4>
                         <div className="stat-numbers">
@@ -125,13 +111,13 @@ function Dashboard() {
             className={`toggle-btn ${!showWorkflow ? 'active' : ''}`}
             onClick={() => setShowWorkflow(false)}
           >
-            📊 Módulos
+            Módulos
           </button>
           <button
             className={`toggle-btn ${showWorkflow ? 'active' : ''}`}
             onClick={() => setShowWorkflow(true)}
           >
-            🔄 Pipeline de Inscripciones
+            Pipeline de Inscripciones
           </button>
         </div>
 
@@ -143,7 +129,6 @@ function Dashboard() {
                 {enabledTabs.map((tab) => (
                   <div key={tab.id} className="tab-card">
                     <div className="tab-header">
-                      <span className="tab-icon">{getTabIcon(tab.id)}</span>
                       <h4>{tab.name}</h4>
                     </div>
                     <p className="tab-fase">{tab.phase}</p>
