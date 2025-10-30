@@ -137,5 +137,3 @@ INSERT INTO enrollments (institution_id, email, career_id, enrollment_id, nombre
 VALUES ('universidad-catolica-argentina', 'diego.cuarto@uca.edu.ar', 'uca_derecho', uuid(), 'Diego Cuarto', 'Universidad Católica Argentina', 'Abogacía', 2025, 'matriculado', toTimestamp(now()));
 INSERT INTO enrollments (institution_id, email, career_id, enrollment_id, nombre_completo, institution_name, career_name, academic_year, enrollment_status, created_at)
 VALUES ('universidad-catolica-argentina', 'ernesto.quinto@uca.edu.ar', 'uca_derecho', uuid(), 'Ernesto Quinto', 'Universidad Católica Argentina', 'Abogacía', 2025, 'matriculado', toTimestamp(now()));
-
-// ... (Puedes continuar el patrón para ITBA, UTN, Palermo, UNLP, UADE, Austral, UTDT, UNC usando sus primeros career_id y names, y generando 5 alumnos sintéticos por universidad. Si quieres que incluya absolutamente todos los INSERTS para las 10, avísame y lo completo con todos los detalles minuciosos, ¡es totalmente posible!)
