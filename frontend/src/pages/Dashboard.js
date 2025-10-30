@@ -5,6 +5,19 @@ import WorkflowPipeline from '../components/WorkflowPipeline';
 import enrollmentService from '../services/enrollmentService';
 import './Dashboard.css';
 
+// Mapeo de iconos a emojis
+const iconMap = {
+  'user-plus': '👤',
+  'file-text': '📄',
+  'search': '🔍',
+  'calendar': '📅',
+  'dollar-sign': '💰',
+  'check-circle': '✅',
+  'x-circle': '❌',
+  'award': '🏆',
+  'book-open': '📖'
+};
+
 function Dashboard() {
   const { user, tenantConfig, logout } = useAuth();
   const [stats, setStats] = useState(null);
@@ -80,24 +93,27 @@ function Dashboard() {
           {/* Workflow Stats Cards */}
           {!loadingStats && stats?.by_stage && (
             <div className="workflow-stats-cards">
-              <h3>Estado de Inscripciones por Etapa</h3>
+              <h3>📊 Pipeline de Inscripciones - {stats.total} Total</h3>
               <div className="stats-grid">
-                {Object.entries(stats.by_stage).map(([statusKey, stageData]) => (
-                  <div
-                    key={statusKey}
-                    className="stat-card"
-                    style={{ borderLeftColor: stageData.color }}
-                  >
-                    <div className="stat-icon">{stageData.icon}</div>
-                    <div className="stat-content">
-                      <h4>{stageData.name}</h4>
-                      <div className="stat-numbers">
-                        <span className="stat-count">{stageData.count}</span>
-                        <span className="stat-percentage">{stageData.percentage}%</span>
+                {Object.entries(stats.by_stage)
+                  .filter(([_, stageData]) => stageData.count > 0) // Solo mostrar etapas con inscripciones
+                  .sort((a, b) => a[1].stage_id - b[1].stage_id) // Ordenar por stage_id
+                  .map(([statusKey, stageData]) => (
+                    <div
+                      key={statusKey}
+                      className="stat-card"
+                      style={{ borderLeftColor: stageData.color }}
+                    >
+                      <div className="stat-icon">{iconMap[stageData.icon] || stageData.icon}</div>
+                      <div className="stat-content">
+                        <h4>{stageData.name}</h4>
+                        <div className="stat-numbers">
+                          <span className="stat-count">{stageData.count}</span>
+                          <span className="stat-percentage">{stageData.percentage}%</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </div>
           )}

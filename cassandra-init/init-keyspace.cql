@@ -114,26 +114,26 @@ ON enrollments (academic_year);
 -- EJEMPLO DE DATOS INICIALES: 5 inscripciones por universidad (demo)
 -- ===============================================
 
--- UBA
+-- UBA (usando workflow stages: interesado, documentacion_pendiente, en_revision, curso_ingreso, aceptado, rechazado)
 INSERT INTO enrollments (institution_id, email, career_id, enrollment_id, nombre_completo, institution_name, career_name, academic_year, enrollment_status, created_at)
-VALUES ('universidad-buenos-aires', 'alumno1.uba@demo.com', 'uba_medicina', uuid(), 'Juan Uba', 'Universidad de Buenos Aires', 'Medicina', 2025, 'pendiente', toTimestamp(now()));
+VALUES ('universidad-buenos-aires', 'alumno1.uba@demo.com', 'uba_medicina', uuid(), 'Juan Uba', 'Universidad de Buenos Aires', 'Medicina', 2025, 'interesado', toTimestamp(now()));
 INSERT INTO enrollments (institution_id, email, career_id, enrollment_id, nombre_completo, institution_name, career_name, academic_year, enrollment_status, created_at)
-VALUES ('universidad-buenos-aires', 'alumna2.uba@demo.com', 'uba_medicina', uuid(), 'Paula Medin', 'Universidad de Buenos Aires', 'Medicina', 2025, 'pendiente', toTimestamp(now()));
+VALUES ('universidad-buenos-aires', 'alumna2.uba@demo.com', 'uba_medicina', uuid(), 'Paula Medin', 'Universidad de Buenos Aires', 'Medicina', 2025, 'documentacion_pendiente', toTimestamp(now()));
 INSERT INTO enrollments (institution_id, email, career_id, enrollment_id, nombre_completo, institution_name, career_name, academic_year, enrollment_status, created_at)
-VALUES ('universidad-buenos-aires', 'carlos3@uba.ar', 'uba_medicina', uuid(), 'Carlos Tercero', 'Universidad de Buenos Aires', 'Medicina', 2025, 'confirmado', toTimestamp(now()));
+VALUES ('universidad-buenos-aires', 'carlos3@uba.ar', 'uba_medicina', uuid(), 'Carlos Tercero', 'Universidad de Buenos Aires', 'Medicina', 2025, 'en_revision', toTimestamp(now()));
 INSERT INTO enrollments (institution_id, email, career_id, enrollment_id, nombre_completo, institution_name, career_name, academic_year, enrollment_status, created_at)
-VALUES ('universidad-buenos-aires', 'maria4@uba.ar', 'uba_medicina', uuid(), 'María Cuartas', 'Universidad de Buenos Aires', 'Medicina', 2025, 'pendiente', toTimestamp(now()));
+VALUES ('universidad-buenos-aires', 'maria4@uba.ar', 'uba_medicina', uuid(), 'María Cuartas', 'Universidad de Buenos Aires', 'Medicina', 2025, 'curso_ingreso', toTimestamp(now()));
 INSERT INTO enrollments (institution_id, email, career_id, enrollment_id, nombre_completo, institution_name, career_name, academic_year, enrollment_status, created_at)
-VALUES ('universidad-buenos-aires', 'diego.quinto@uba.ar', 'uba_medicina', uuid(), 'Diego Quinto', 'Universidad de Buenos Aires', 'Medicina', 2025, 'pendiente', toTimestamp(now()));
+VALUES ('universidad-buenos-aires', 'diego.quinto@uba.ar', 'uba_medicina', uuid(), 'Diego Quinto', 'Universidad de Buenos Aires', 'Medicina', 2025, 'aceptado', toTimestamp(now()));
 
--- UCA
+-- UCA (usando workflow stages privado: interesado, documentacion_pendiente, en_revision, entrevista_programada, evaluacion_beca, aceptado, rechazado, matriculado)
 INSERT INTO enrollments (institution_id, email, career_id, enrollment_id, nombre_completo, institution_name, career_name, academic_year, enrollment_status, created_at)
 VALUES ('universidad-catolica-argentina', 'ana.uca@demo.com', 'uca_derecho', uuid(), 'Ana María', 'Universidad Católica Argentina', 'Abogacía', 2025, 'matriculado', toTimestamp(now()));
 INSERT INTO enrollments (institution_id, email, career_id, enrollment_id, nombre_completo, institution_name, career_name, academic_year, enrollment_status, created_at)
-VALUES ('universidad-catolica-argentina', 'beatriz.segunda@uca.edu.ar', 'uca_derecho', uuid(), 'Beatriz Segunda', 'Universidad Católica Argentina', 'Abogacía', 2025, 'pendiente', toTimestamp(now()));
+VALUES ('universidad-catolica-argentina', 'beatriz.segunda@uca.edu.ar', 'uca_derecho', uuid(), 'Beatriz Segunda', 'Universidad Católica Argentina', 'Abogacía', 2025, 'interesado', toTimestamp(now()));
 INSERT INTO enrollments (institution_id, email, career_id, enrollment_id, nombre_completo, institution_name, career_name, academic_year, enrollment_status, created_at)
-VALUES ('universidad-catolica-argentina', 'carla.uca@demo.com', 'uca_derecho', uuid(), 'Carla Carlos', 'Universidad Católica Argentina', 'Abogacía', 2025, 'confirmado', toTimestamp(now()));
+VALUES ('universidad-catolica-argentina', 'carla.uca@demo.com', 'uca_derecho', uuid(), 'Carla Carlos', 'Universidad Católica Argentina', 'Abogacía', 2025, 'entrevista_programada', toTimestamp(now()));
 INSERT INTO enrollments (institution_id, email, career_id, enrollment_id, nombre_completo, institution_name, career_name, academic_year, enrollment_status, created_at)
 VALUES ('universidad-catolica-argentina', 'diego.cuarto@uca.edu.ar', 'uca_derecho', uuid(), 'Diego Cuarto', 'Universidad Católica Argentina', 'Abogacía', 2025, 'matriculado', toTimestamp(now()));
 INSERT INTO enrollments (institution_id, email, career_id, enrollment_id, nombre_completo, institution_name, career_name, academic_year, enrollment_status, created_at)
-VALUES ('universidad-catolica-argentina', 'ernesto.quinto@uca.edu.ar', 'uca_derecho', uuid(), 'Ernesto Quinto', 'Universidad Católica Argentina', 'Abogacía', 2025, 'matriculado', toTimestamp(now()));
+VALUES ('universidad-catolica-argentina', 'ernesto.quinto@uca.edu.ar', 'uca_derecho', uuid(), 'Ernesto Quinto', 'Universidad Católica Argentina', 'Abogacía', 2025, 'aceptado', toTimestamp(now()));

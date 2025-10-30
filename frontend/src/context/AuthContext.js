@@ -3,6 +3,25 @@ import axios from 'axios';
 
 const AuthContext = createContext(null);
 
+// Configurar interceptor GLOBALMENTE antes de cualquier render
+const setupAxiosInterceptor = () => {
+  axios.interceptors.request.use(
+    (config) => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+};
+
+// Ejecutar inmediatamente
+setupAxiosInterceptor();
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [tenantConfig, setTenantConfig] = useState(null);
@@ -11,23 +30,6 @@ export const AuthProvider = ({ children }) => {
   const API_URL = 'http://localhost:5001/api';
 
   useEffect(() => {
-    // Configurar interceptor de axios para agregar token a todas las peticiones
-    const requestInterceptor = axios.interceptors.request.use(
-      (config) => {
-        const token = localStorage.getItem('token');
-        if (token) {
-          config.headers['Authorization'] = `Bearer ${token}`;
-          console.log('🔐 Interceptor: Token agregado a la petición', config.url);
-        } else {
-          console.warn('⚠️ Interceptor: No hay token disponible para', config.url);
-        }
-        return config;
-      },
-      (error) => {
-        return Promise.reject(error);
-      }
-    );
-
     // Verificar si hay un token guardado al cargar la app
     const token = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user');
@@ -43,11 +45,6 @@ export const AuthProvider = ({ children }) => {
     }
 
     setLoading(false);
-
-    // Cleanup interceptor on unmount
-    return () => {
-      axios.interceptors.request.eject(requestInterceptor);
-    };
   }, []);
 
   const loadTenantConfig = async (tenantId) => {
