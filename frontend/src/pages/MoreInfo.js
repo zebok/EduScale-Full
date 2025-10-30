@@ -117,8 +117,8 @@ export default function MoreInfo() {
       if (!any) return false;
     }
     if (filters.category) {
-      // Match against the career's `category` property (fallback to empty string)
-      const anyCat = careers.some(c => (c.category || '').toLowerCase() === filters.category.toLowerCase());
+      // Match against the career's `categoria` (spanish) or `category` property
+      const anyCat = careers.some(c => ((c.categoria || c.category || '').toLowerCase() === filters.category.toLowerCase()));
       if (!anyCat) return false;
     }
     if (filters.duration) {
