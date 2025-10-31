@@ -10,8 +10,8 @@ const { executeQuery } = require('../config/cassandra');
 // POST /api/auth/login - Login de administradores
 router.post('/login', async (req, res) => {
   try {
-  const { email, password } = req.body;
-  const loginIdentifier = (email || '').toLowerCase().trim();
+    const { email, password } = req.body;
+    const loginIdentifier = (email || '').toLowerCase().trim();
 
     // Validar campos requeridos
     if (!email || !password) {
@@ -22,7 +22,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Buscar usuario admin por email (Mongo)
-  const user = await User.findOne({ email: loginIdentifier });
+    const user = await User.findOne({ email: loginIdentifier });
 
     // Verificar si el usuario está activo
     if (user) {
@@ -96,6 +96,28 @@ router.post('/login', async (req, res) => {
     }
 
     if (!result || result.rowLength === 0) {
+      // Diagnóstico: ver si existe el alumno pero no está matriculado
+      try {
+        const cqlByAcademicNoStatus = `SELECT * FROM enrollments WHERE academic_mail = ? AND academic_password = ? ALLOW FILTERING`;
+        let diag = await executeQuery(cqlByAcademicNoStatus, [loginIdentifier, password], { prepare: true });
+        if (!diag || diag.rowLength === 0) {
+          const cqlByPersonalNoStatus = `SELECT * FROM enrollments WHERE email = ? AND academic_password = ? ALLOW FILTERING`;
+          diag = await executeQuery(cqlByPersonalNoStatus, [loginIdentifier, password], { prepare: true });
+        }
+
+        if (diag && diag.rowLength > 0) {
+          const found = diag.rows[0];
+          if ((found.enrollment_status || '').toLowerCase() !== 'matriculado') {
+            return res.status(403).json({
+              error: 'Alumno no habilitado',
+              message: `Tu inscripción aún no está matriculada (estado actual: ${found.enrollment_status || 'desconocido'}).`
+            });
+          }
+        }
+      } catch (e) {
+        // continuar con respuesta genérica
+      }
+
       return res.status(401).json({
         error: 'Credenciales inválidas',
         message: 'Email o contraseña incorrectos'
@@ -103,7 +125,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Tomar la primera coincidencia (un alumno puede tener múltiples carreras; aquí simplificamos)
-  const row = result.rows[0];
+    const row = result.rows[0];
 
     // Generar un userId estable para alumnos (usar enrollment_id si existe, sino academic_mail)
     const studentId = (row.enrollment_id && row.enrollment_id.toString()) || `student:${row.academic_mail}`;
