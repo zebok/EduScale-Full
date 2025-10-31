@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import './StudentDashboard.css';
 
 const StudentDashboard = () => {
     const { user, tenantConfig } = useAuth();
@@ -9,9 +10,9 @@ const StudentDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    const primary = tenantConfig?.branding?.theme?.primary_color || '#1f2937';
-    const secondary = tenantConfig?.branding?.theme?.secondary_color || '#3b82f6';
-    const accent = tenantConfig?.branding?.theme?.accent_color || '#10b981';
+    const primary = tenantConfig?.branding?.theme?.primary_color || '#0d47a1';
+    const secondary = tenantConfig?.branding?.theme?.secondary_color || '#1976d2';
+    const accent = tenantConfig?.branding?.theme?.accent_color || '#22c55e';
     const logo = tenantConfig?.branding?.logo_url;
     const instName = tenantConfig?.institution?.name || 'Tu institución';
 
@@ -36,17 +37,9 @@ const StudentDashboard = () => {
     }, []);
 
     const Card = ({ title, children }) => (
-        <div style={{
-            background: 'white',
-            borderRadius: 12,
-            border: '1px solid #e5e7eb',
-            padding: 20,
-            flex: 1,
-            minWidth: 280,
-            boxShadow: '0 6px 10px -4px rgba(0,0,0,0.08)'
-        }}>
-            <h3 style={{ marginTop: 0, color: '#111827', fontSize: 16 }}>{title}</h3>
-            <div>{children}</div>
+        <div className="section-card">
+            <div className="section-header">{title}</div>
+            <div className="section-body">{children}</div>
         </div>
     );
 
@@ -56,133 +49,157 @@ const StudentDashboard = () => {
         window.open(url, '_blank');
     };
 
+    // CSS variables sync with tenant theme
+    useMemo(() => {
+        const root = document.documentElement;
+        root.style.setProperty('--sd-bg-start', primary);
+        root.style.setProperty('--sd-bg-end', secondary);
+        root.style.setProperty('--sd-secondary', secondary);
+        root.style.setProperty('--sd-accent', accent);
+    }, [primary, secondary, accent]);
+
+    const firstInitial = (data?.student?.nombre_completo || user?.nombre || 'A')
+        .trim()
+        .charAt(0)
+        .toUpperCase();
+
     return (
-        <div style={{ minHeight: '100vh', background: '#f8fafc' }}>
-            <header
-                style={{
-                    background: `linear-gradient(90deg, ${primary}, ${secondary})`,
-                    color: 'white',
-                    padding: '16px 24px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 16
-                }}
-            >
-                {logo && (
-                    <img src={logo} alt="logo" style={{ height: 40, background: 'white', borderRadius: 6, padding: 6 }} />
-                )}
-                <h1 style={{ margin: 0, fontSize: 20 }}>{instName} · Portal del Alumno</h1>
+        <div className="student-layout">
+            <header className="student-topbar">
+                <div className="brand">
+                    {logo && <img src={logo} alt="logo" />}
+                    <h1 style={{ margin: 0, fontSize: 20 }}>{instName} · Portal del Alumno</h1>
+                </div>
+                <div>
+                    <button className={`btn-primary`} onClick={() => setActiveTab('perfil')}>Mi Perfil</button>
+                    {/* Cerrar sesión está en la app principal; evitamos duplicar aquí */}
+                </div>
             </header>
 
-            <main style={{ maxWidth: 960, margin: '32px auto', padding: '0 16px' }}>
-                <div style={{ background: 'white', borderRadius: 12, border: '1px solid #e5e7eb' }}>
-                    <div style={{ display: 'flex', gap: 8, padding: 12, borderBottom: '1px solid #e5e7eb' }}>
-                        <button onClick={() => setActiveTab('dashboard')} style={{
-                            padding: '8px 12px',
-                            borderRadius: 8,
-                            border: '1px solid #e5e7eb',
-                            background: activeTab === 'dashboard' ? `${secondary}22` : 'white',
-                            color: activeTab === 'dashboard' ? '#111827' : '#374151',
-                            cursor: 'pointer'
-                        }}>Dashboard</button>
-                        <button onClick={() => setActiveTab('perfil')} style={{
-                            padding: '8px 12px',
-                            borderRadius: 8,
-                            border: '1px solid #e5e7eb',
-                            background: activeTab === 'perfil' ? `${secondary}22` : 'white',
-                            color: activeTab === 'perfil' ? '#111827' : '#374151',
-                            cursor: 'pointer'
-                        }}>Perfil</button>
+            <main className="student-container">
+                <div className="student-panel">
+                    <div className="student-tabs">
+                        <button className={`student-tab ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>Dashboard</button>
+                        <button className={`student-tab ${activeTab === 'perfil' ? 'active' : ''}`} onClick={() => setActiveTab('perfil')}>Perfil</button>
                     </div>
-
-                    <div style={{ padding: 20 }}>
-                        {loading && <div style={{ color: '#64748b' }}>Cargando datos...</div>}
+                    <div className="student-content">
+                        {loading && <div className="welcome-subtitle">Cargando datos...</div>}
                         {error && <div style={{ color: '#ef4444' }}>{error}</div>}
 
                         {!loading && !error && data && activeTab === 'dashboard' && (
                             <>
-                                <h2 style={{ marginTop: 0, color: '#111827' }}>
-                                    Bienvenido {data.student?.nombre_completo || user?.nombre || 'Alumno'}!
-                                </h2>
-                                <p style={{ color: '#374151', marginBottom: 24 }}>
-                                    Estás autenticado como <strong style={{ color: secondary }}>{data.student?.academic_mail || user?.email}</strong>.
-                                </p>
-                                <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-                                    <Card title="Carrera">
-                                        <div style={{ color: '#334155' }}>
-                                            <div><strong>Nombre:</strong> {data.career?.name || '-'}</div>
-                                            <div><strong>Facultad:</strong> {data.career?.faculty || '-'}</div>
-                                            <div><strong>Duración:</strong> {data.career?.duration_years ? `${data.career.duration_years} años` : '-'}</div>
-                                            <div><strong>Año de ingreso:</strong> {data.progress?.academic_year || '-'}</div>
+                                <div className="welcome-card">
+                                    <h2 className="welcome-title">¡Bienvenido/a, {data.student?.nombre_completo || user?.nombre || 'Alumno'}!</h2>
+                                    <p className="welcome-subtitle">Estás autenticado como {data.student?.academic_mail || user?.email}. Disfrutá tu experiencia académica.</p>
+                                </div>
+
+                                <div className="tiles">
+                                    <div className="tile">
+                                        <div className="tile-title">📚 {data.career?.name || 'Carrera'}</div>
+                                        <div className="welcome-subtitle">{data.career?.faculty || 'Facultad'}</div>
+                                    </div>
+                                    <div className="tile">
+                                        <div className="tile-title">📅 Año Académico {data.progress?.academic_year || '-'}
                                         </div>
-                                    </Card>
-                                    <Card title="Progreso">
-                                        <div style={{ color: '#334155' }}>
-                                            <div><strong>Años cursados:</strong> {data.progress?.years_elapsed ?? '-'}</div>
-                                            <div><strong>Años restantes:</strong> {data.progress?.years_left ?? '-'}</div>
-                                        </div>
-                                    </Card>
-                                    <Card title="Estados">
-                                        <div style={{ color: '#334155' }}>
-                                            <div><strong>Inscripción:</strong> {data.enrollment?.status || '-'}</div>
-                                            <div><strong>Documentación:</strong> {data.enrollment?.document_status || '-'}</div>
-                                            <div><strong>Pago:</strong> {data.enrollment?.payment_status || '-'}</div>
-                                        </div>
-                                    </Card>
-                                    <Card title="Admisión (Mongo)">
-                                        {data.admission ? (
-                                            <div style={{ color: '#334155' }}>
-                                                <div><strong>Estado:</strong> {data.admission.estado}</div>
-                                                <div><strong>Documentos:</strong> {data.admission.documentos || '-'}</div>
-                                                <div><strong>Comentarios:</strong> {data.admission.comentarios || '-'}</div>
+                                        <div className="welcome-subtitle">Estado: {data.enrollment?.status || '-'}</div>
+                                    </div>
+                                    <div className="tile">
+                                        <div className="tile-title">📄 Documentación</div>
+                                        <div className="welcome-subtitle">{data.enrollment?.document_status || 'Sin datos'}</div>
+                                    </div>
+                                </div>
+
+                                <div className="section-grid">
+                                    <div className="section-card">
+                                        <div className="section-header">📘 Información de tu Carrera</div>
+                                        <div className="section-body">
+                                            <div className="info-list">
+                                                <div className="info-row">
+                                                    <div className="info-key">Carrera:</div>
+                                                    <div className="info-val">{data.career?.name || '-'}</div>
+                                                </div>
+                                                <div className="info-row">
+                                                    <div className="info-key">Facultad:</div>
+                                                    <div className="info-val">{data.career?.faculty || '-'}</div>
+                                                </div>
+                                                <div className="info-row">
+                                                    <div className="info-key">Título:</div>
+                                                    <div className="info-val">{data.career?.name ? `${data.career.name}` : '-'}</div>
+                                                </div>
+                                                <div className="info-row">
+                                                    <div className="info-key">Duración:</div>
+                                                    <div className="info-val">{data.career?.duration_years ? `${data.career.duration_years} años` : '-'}</div>
+                                                </div>
+                                                <div className="info-row">
+                                                    <div className="info-key">Años restantes:</div>
+                                                    <div className="info-val" style={{ fontWeight: 700 }}>{data.progress?.years_left ?? '-'}</div>
+                                                </div>
+                                                <div className="info-row">
+                                                    <div className="info-key">Modalidad:</div>
+                                                    <div className="info-val">Presencial</div>
+                                                </div>
+                                                <div className="info-row">
+                                                    <div className="info-key">Turno:</div>
+                                                    <div className="info-val">Tiempo completo</div>
+                                                </div>
                                             </div>
-                                        ) : (
-                                            <div style={{ color: '#64748b' }}>Sin expediente de admisión</div>
-                                        )}
-                                    </Card>
-                                    <Card title="Accesos rápidos">
-                                        <button onClick={openWebmail} style={{
-                                            background: accent,
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: 8,
-                                            padding: '10px 14px',
-                                            cursor: 'pointer'
-                                        }}>Abrir Webmail</button>
-                                    </Card>
+                                        </div>
+                                    </div>
+
+                                    <div className="section-card">
+                                        <div className="section-header">📄 Documentación</div>
+                                        <div className="section-body">
+                                            <div style={{ marginBottom: 8 }}>
+                                                Estado: <span className="badge success">{(data.enrollment?.document_status || 'Completa')}</span>
+                                            </div>
+                                            <div className="doc-list">
+                                                <div className="doc-item">📎 dni.pdf</div>
+                                                <div className="doc-item">📎 certificado_secundario.pdf</div>
+                                                <div className="doc-item">📎 foto.jpg</div>
+                                            </div>
+                                            <button className="doc-upload" onClick={() => alert('Función demo: subir documentos')}>Subir Documentos</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style={{ marginTop: 16 }}>
+                                    <button className="btn-primary" onClick={openWebmail}>Abrir Webmail</button>
                                 </div>
                             </>
                         )}
 
                         {!loading && !error && data && activeTab === 'perfil' && (
                             <>
-                                <h2 style={{ marginTop: 0, color: '#111827' }}>Perfil</h2>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                                    <Card title="Datos personales">
-                                        <div style={{ color: '#334155' }}>
-                                            <div><strong>Nombre:</strong> {data.student?.nombre_completo || '-'}</div>
-                                            <div><strong>Email académico:</strong> {data.student?.academic_mail || '-'}</div>
-                                            <div><strong>Email personal:</strong> {data.student?.email_personal || '-'}</div>
+                                <div className="profile-header">
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                                        <div className="avatar">{firstInitial}</div>
+                                        <div>
+                                            <h2 style={{ margin: '0 0 6px' }}>{data.student?.nombre_completo || '-'}</h2>
+                                            <span className="badge success">{data.enrollment?.status || 'Matriculado'}</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button className="btn-primary" onClick={() => setActiveTab('dashboard')}>← Volver al Dashboard</button>
+                                    </div>
+                                </div>
+
+                                <div className="profile-grid">
+                                    <Card title="👤 Información Personal">
+                                        <div className="info-list">
+                                            <div className="info-row"><div className="info-key">Nombre Completo:</div><div className="info-val">{data.student?.nombre_completo || '-'}</div></div>
+                                            <div className="info-row"><div className="info-key">Email Personal:</div><div className="info-val">{data.student?.email_personal || '-'}</div></div>
+                                            <div className="info-row"><div className="info-key">Email Académico:</div><div className="info-val">{data.student?.academic_mail || '-'}</div></div>
                                         </div>
                                     </Card>
-                                    <Card title="Institución">
-                                        <div style={{ color: '#334155' }}>
-                                            <div><strong>Nombre:</strong> {data.institution?.name || instName}</div>
-                                            <div><strong>ID:</strong> {data.institution?.id || '-'}</div>
-                                        </div>
-                                    </Card>
-                                    <Card title="Carrera">
-                                        <div style={{ color: '#334155' }}>
-                                            <div><strong>Carrera:</strong> {data.career?.name || '-'}</div>
-                                            <div><strong>Facultad:</strong> {data.career?.faculty || '-'}</div>
-                                            <div><strong>Duración:</strong> {data.career?.duration_years ? `${data.career.duration_years} años` : '-'}</div>
-                                        </div>
-                                    </Card>
-                                    <Card title="Estados">
-                                        <div style={{ color: '#334155' }}>
-                                            <div><strong>Inscripción:</strong> {data.enrollment?.status || '-'}</div>
-                                            <div><strong>Documentos:</strong> {data.enrollment?.document_status || '-'}</div>
-                                            <div><strong>Pago:</strong> {data.enrollment?.payment_status || '-'}</div>
+                                    <Card title="🎓 Información Académica">
+                                        <div className="info-list">
+                                            <div className="info-row"><div className="info-key">Universidad:</div><div className="info-val">{data.institution?.name || instName}</div></div>
+                                            <div className="info-row"><div className="info-key">Carrera:</div><div className="info-val">{data.career?.name || '-'}</div></div>
+                                            <div className="info-row"><div className="info-key">Facultad:</div><div className="info-val">{data.career?.faculty || '-'}</div></div>
+                                            <div className="info-row"><div className="info-key">Duración:</div><div className="info-val">{data.career?.duration_years ? `${data.career.duration_years} años` : '-'}</div></div>
+                                            <div className="info-row"><div className="info-key">Años Restantes:</div><div className="info-val" style={{ fontWeight: 700 }}>{data.progress?.years_left ?? '-'}</div></div>
+                                            <div className="info-row"><div className="info-key">Modalidad:</div><div className="info-val">Presencial</div></div>
+                                            <div className="info-row"><div className="info-key">Turno:</div><div className="info-val">Tiempo completo</div></div>
                                         </div>
                                     </Card>
                                 </div>
