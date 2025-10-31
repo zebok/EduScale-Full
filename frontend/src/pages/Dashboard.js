@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import WorkflowPipeline from '../components/WorkflowPipeline';
+import FeesSection from '../components/FeesSection';
 import enrollmentService from '../services/enrollmentService';
 import './Dashboard.css';
 
@@ -43,6 +44,7 @@ function Dashboard() {
   }
 
   const { institution, branding } = tenantConfig;
+  const isPrivate = (institution?.type || '').toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().includes('privada');
 
   return (
     <div className="dashboard-container" style={{
@@ -99,6 +101,13 @@ function Dashboard() {
             </div>
           )}
         </div>
+
+        {/* Aranceles - Solo instituciones privadas */}
+        {isPrivate && (
+          <div className="fees-wrapper">
+            <FeesSection tenantId={user.tenant_id} />
+          </div>
+        )}
 
         {/* WorkflowPipeline - siempre visible */}
         <WorkflowPipeline />

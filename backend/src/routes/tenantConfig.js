@@ -79,3 +79,60 @@ router.post('/', async (req, res) => {
 });
 
 module.exports = router;
+ 
+// -------------------------------
+// Fees endpoint (private only)
+// GET /api/tenant-config/:tenant_id/fees
+// -------------------------------
+router.get('/:tenant_id/fees', authMiddleware, async (req, res) => {
+  try {
+    const { tenant_id } = req.params;
+
+    // Authorization: same tenant
+    if (req.user.tenant_id !== tenant_id) {
+      return res.status(403).json({
+        error: 'Acceso denegado',
+        message: 'No tienes permiso para acceder a esta institución'
+      });
+    }
+
+    const config = await TenantConfig.findOne({ institution_id: tenant_id });
+    if (!config) {
+      return res.status(404).json({ error: 'No encontrado', message: 'Institución inexistente' });
+    }
+
+    const typeNorm = (config.institution?.type || '')
+      .toString()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+
+    const isPrivate = typeNorm.includes('privada');
+    if (!isPrivate) {
+      return res.status(404).json({
+        error: 'No disponible',
+        message: 'La sección de aranceles solo aplica a instituciones privadas'
+      });
+    }
+
+    // If in future we persist payments in config.settings.payments, return that; else defaults
+    const payments = config.settings?.payments;
+    const fees = payments || {
+      institution_id: tenant_id,
+      currency: 'ARS',
+      inscription_fee: 150000,
+      monthly_fee: { amount: 120000, installments: 10 },
+      payment_methods: ['Tarjeta de crédito', 'Transferencia bancaria', 'Débito automático'],
+      due_dates: ['10', '20'],
+      discounts: [
+        { type: 'pronto_pago', label: 'Pronto pago', percent: 10, until_day: 10 },
+        { type: 'alumno_regular', label: 'Alumno regular', percent: 5 }
+      ],
+      late_fee: { percent: 5, after_days: 5 }
+    };
+
+    return res.json({ fees });
+  } catch (error) {
+    console.error('Error al obtener aranceles:', error);
+    res.status(500).json({ error: 'Error en el servidor', message: 'No se pudieron obtener los aranceles' });
+  }
+});

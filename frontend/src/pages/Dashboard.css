@@ -82,6 +82,17 @@
   box-sizing: border-box;
 }
 
+/* Fees Section */
+.fees-section { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 1rem; margin: 1.5rem 0; }
+.fees-section h3 { margin: 0 0 1rem 0; color: #111827; }
+.fees-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+.fee-card { background: #fafafa; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1rem; }
+.fee-amount { font-size: 1.25rem; font-weight: 700; color: #111827; }
+.fee-note { color: #6b7280; margin: 0.25rem 0 0 0; }
+.fee-list { margin: 0; padding-left: 1rem; }
+.fees-discounts { margin-top: 1rem; }
+.fees-error { color: #b91c1c; }
+
 .dashboard-loading {
   display: flex;
   justify-content: center;
