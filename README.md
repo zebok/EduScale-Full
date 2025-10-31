@@ -506,4 +506,22 @@ Usuario admin para UADE:
 - Password: `AdminUADE123`
 
 
+### 👩‍🎓 Credenciales de alumnos (demo)
+
+Se crearon 10 alumnos (1 por universidad) en Cassandra con mail académico y contraseña por defecto:
+
+- UBA: alumno@universidad-buenos-aires.edu / Estudiante2025!
+- UCA: alumno@universidad-catolica-argentina.edu / Estudiante2025!
+- ITBA: alumno@instituto-tecnologico-buenos-aires.edu / Estudiante2025!
+- UTN: alumno@universidad-tecnologica-nacional.edu / Estudiante2025!
+- UP: alumno@universidad-palermo.edu / Estudiante2025!
+- UNLP: alumno@universidad-nacional-la-plata.edu / Estudiante2025!
+- UADE: alumno@universidad-argentina-empresa.edu / Estudiante2025!
+- AUSTRAL: alumno@universidad-austral.edu / Estudiante2025!
+- UTDT: alumno@universidad-torcuato-di-tella.edu / Estudiante2025!
+- UNC: alumno@universidad-nacional-cordoba.edu / Estudiante2025!
+
+Nota: estos alumnos están en la tabla `enrollments` de Cassandra con `enrollment_status = "interesado"` y pueden usarse para el login de alumno (dashboard) por institución.
+
+
 
