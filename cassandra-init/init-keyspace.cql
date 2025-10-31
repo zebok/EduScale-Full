@@ -161,7 +161,7 @@ INSERT INTO enrollments (
   academic_mail, academic_password, created_at
 ) VALUES (
   'universidad-buenos-aires', 'login.uba@demo.com', 'uba_medicina', uuid(), 'Alumno UBA',
-  'Universidad de Buenos Aires', 'Medicina', 2025, 'interesado',
+  'Universidad de Buenos Aires', 'Medicina', 2025, 'matriculado',
   'alumno@universidad-buenos-aires.edu', 'Estudiante2025!', toTimestamp(now())
 );
 
@@ -172,7 +172,7 @@ INSERT INTO enrollments (
   academic_mail, academic_password, created_at
 ) VALUES (
   'universidad-catolica-argentina', 'login.uca@demo.com', 'uca_derecho', uuid(), 'Alumno UCA',
-  'Universidad Católica Argentina', 'Abogacía', 2025, 'interesado',
+  'Universidad Católica Argentina', 'Abogacía', 2025, 'matriculado',
   'alumno@universidad-catolica-argentina.edu', 'Estudiante2025!', toTimestamp(now())
 );
 
@@ -183,7 +183,7 @@ INSERT INTO enrollments (
   academic_mail, academic_password, created_at
 ) VALUES (
   'instituto-tecnologico-buenos-aires', 'login.itba@demo.com', 'itba_informatica', uuid(), 'Alumno ITBA',
-  'Instituto Tecnológico de Buenos Aires', 'Ingeniería Informática', 2025, 'interesado',
+  'Instituto Tecnológico de Buenos Aires', 'Ingeniería Informática', 2025, 'matriculado',
   'alumno@instituto-tecnologico-buenos-aires.edu', 'Estudiante2025!', toTimestamp(now())
 );
 
@@ -194,7 +194,7 @@ INSERT INTO enrollments (
   academic_mail, academic_password, created_at
 ) VALUES (
   'universidad-tecnologica-nacional', 'login.utn@demo.com', 'utn_sistemas', uuid(), 'Alumno UTN',
-  'Universidad Tecnológica Nacional', 'Ingeniería en Sistemas de Información', 2025, 'interesado',
+  'Universidad Tecnológica Nacional', 'Ingeniería en Sistemas de Información', 2025, 'matriculado',
   'alumno@universidad-tecnologica-nacional.edu', 'Estudiante2025!', toTimestamp(now())
 );
 
@@ -205,7 +205,7 @@ INSERT INTO enrollments (
   academic_mail, academic_password, created_at
 ) VALUES (
   'universidad-palermo', 'login.up@demo.com', 'up_diseno_grafico', uuid(), 'Alumno UP',
-  'Universidad de Palermo', 'Diseño Gráfico', 2025, 'interesado',
+  'Universidad de Palermo', 'Diseño Gráfico', 2025, 'matriculado',
   'alumno@universidad-palermo.edu', 'Estudiante2025!', toTimestamp(now())
 );
 
@@ -216,7 +216,7 @@ INSERT INTO enrollments (
   academic_mail, academic_password, created_at
 ) VALUES (
   'universidad-nacional-la-plata', 'login.unlp@demo.com', 'unlp_informatica', uuid(), 'Alumno UNLP',
-  'Universidad Nacional de La Plata', 'Licenciatura en Informática', 2025, 'interesado',
+  'Universidad Nacional de La Plata', 'Licenciatura en Informática', 2025, 'matriculado',
   'alumno@universidad-nacional-la-plata.edu', 'Estudiante2025!', toTimestamp(now())
 );
 
@@ -227,7 +227,7 @@ INSERT INTO enrollments (
   academic_mail, academic_password, created_at
 ) VALUES (
   'universidad-argentina-empresa', 'login.uade@demo.com', 'uade_administracion', uuid(), 'Alumno UADE',
-  'Universidad Argentina de la Empresa', 'Administración de Empresas', 2025, 'interesado',
+  'Universidad Argentina de la Empresa', 'Administración de Empresas', 2025, 'matriculado',
   'alumno@universidad-argentina-empresa.edu', 'Estudiante2025!', toTimestamp(now())
 );
 
@@ -238,7 +238,7 @@ INSERT INTO enrollments (
   academic_mail, academic_password, created_at
 ) VALUES (
   'universidad-austral', 'login.austral@demo.com', 'austral_medicina', uuid(), 'Alumno Austral',
-  'Universidad Austral', 'Medicina', 2025, 'interesado',
+  'Universidad Austral', 'Medicina', 2025, 'matriculado',
   'alumno@universidad-austral.edu', 'Estudiante2025!', toTimestamp(now())
 );
 
@@ -249,7 +249,7 @@ INSERT INTO enrollments (
   academic_mail, academic_password, created_at
 ) VALUES (
   'universidad-torcuato-di-tella', 'login.utdt@demo.com', 'utdt_economia', uuid(), 'Alumno UTDT',
-  'Universidad Torcuato Di Tella', 'Licenciatura en Economía', 2025, 'interesado',
+  'Universidad Torcuato Di Tella', 'Licenciatura en Economía', 2025, 'matriculado',
   'alumno@universidad-torcuato-di-tella.edu', 'Estudiante2025!', toTimestamp(now())
 );
 
@@ -260,6 +260,6 @@ INSERT INTO enrollments (
   academic_mail, academic_password, created_at
 ) VALUES (
   'universidad-nacional-cordoba', 'login.unc@demo.com', 'unc_medicina', uuid(), 'Alumno UNC',
-  'Universidad Nacional de Córdoba', 'Medicina', 2025, 'interesado',
+  'Universidad Nacional de Córdoba', 'Medicina', 2025, 'matriculado',
   'alumno@universidad-nacional-cordoba.edu', 'Estudiante2025!', toTimestamp(now())
 );

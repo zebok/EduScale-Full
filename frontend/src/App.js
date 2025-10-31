@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import MinisterioDashboard from './pages/MinisterioDashboard';
+import StudentDashboard from './pages/StudentDashboard';
 import ApplicationForm from './pages/ApplicationForm';
 import MoreInfo from './pages/MoreInfo';
 import './App.css';
@@ -27,6 +28,11 @@ function App() {
           <Route path="/ministerio" element={
             <PrivateRoute>
               <MinisterioDashboard />
+            </PrivateRoute>
+          } />
+          <Route path="/alumno" element={
+            <PrivateRoute>
+              <StudentDashboard />
             </PrivateRoute>
           } />
         </Routes>

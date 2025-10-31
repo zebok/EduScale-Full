@@ -23,6 +23,8 @@ function Login() {
       // Redirigir según el rol del usuario
       if (result.user.rol === 'super_admin') {
         navigate('/ministerio');
+      } else if (result.user.rol === 'alumno') {
+        navigate('/alumno');
       } else {
         navigate('/dashboard');
       }

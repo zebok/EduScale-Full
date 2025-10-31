@@ -5,6 +5,7 @@ const User = require('../models/User');
 const { generateToken } = require('../utils/jwt');
 const redisConfig = require('../config/redis');
 const authMiddleware = require('../middleware/authMiddleware');
+const { executeQuery } = require('../config/cassandra');
 
 // POST /api/auth/login - Login de administradores
 router.post('/login', async (req, res) => {
@@ -19,83 +20,126 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // Buscar usuario por email
+    // Buscar usuario admin por email (Mongo)
     const user = await User.findOne({ email: email.toLowerCase() });
 
-    if (!user) {
-      return res.status(401).json({
-        error: 'Credenciales inválidas',
-        message: 'Email o contraseña incorrectos'
-      });
-    }
-
     // Verificar si el usuario está activo
-    if (!user.activo) {
-      return res.status(401).json({
-        error: 'Usuario inactivo',
-        message: 'Tu cuenta ha sido desactivada'
-      });
+    if (user) {
+      // Flujo de login Admin (Mongo)
+      if (!user.activo) {
+        return res.status(401).json({
+          error: 'Usuario inactivo',
+          message: 'Tu cuenta ha sido desactivada'
+        });
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) {
+        // Si la contraseña no coincide para admin, no devolvemos aún, probamos flujo alumno
+      } else {
+        user.ultimo_login = new Date();
+        await user.save();
+
+        const token = generateToken({
+          userId: user._id.toString(),
+          tenant_id: user.tenant_id,
+          rol: user.rol
+        });
+
+        const sessionData = {
+          userId: user._id.toString(),
+          email: user.email,
+          nombre: user.nombre,
+          apellido: user.apellido,
+          tenant_id: user.tenant_id,
+          rol: user.rol,
+          permisos: user.permisos,
+          loginAt: new Date().toISOString()
+        };
+
+        const redisClient = redisConfig.redisClient;
+        const sessionKey = `session:${user._id.toString()}`;
+
+        try {
+          await redisClient.setEx(sessionKey, 3600, JSON.stringify(sessionData));
+          console.log(`✓ Session created in Redis for ${user.email}`);
+        } catch (redisError) {
+          console.error('⚠️  Failed to create Redis session:', redisError);
+        }
+
+        return res.json({
+          token,
+          user: {
+            id: user._id,
+            email: user.email,
+            nombre: user.nombre,
+            apellido: user.apellido,
+            tenant_id: user.tenant_id,
+            rol: user.rol,
+            permisos: user.permisos
+          }
+        });
+      }
     }
 
-    // Comparar contraseña
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    // Flujo de login Alumno (Cassandra)
+    // Buscar por email académico y contraseña en enrollments
+    const cql = `SELECT * FROM enrollments WHERE academic_mail = ? AND academic_password = ? ALLOW FILTERING`;
+    const result = await executeQuery(cql, [email, password], { prepare: true });
 
-    if (!isPasswordValid) {
+    if (!result || result.rowLength === 0) {
       return res.status(401).json({
         error: 'Credenciales inválidas',
         message: 'Email o contraseña incorrectos'
       });
     }
 
-    // Actualizar último login
-    user.ultimo_login = new Date();
-    await user.save();
+    // Tomar la primera coincidencia (un alumno puede tener múltiples carreras; aquí simplificamos)
+    const row = result.rows[0];
 
-    // Generar token JWT
+    // Generar un userId estable para alumnos (usar enrollment_id si existe, sino academic_mail)
+    const studentId = (row.enrollment_id && row.enrollment_id.toString()) || `student:${row.academic_mail}`;
+
+    // Generar token JWT para alumno
     const token = generateToken({
-      userId: user._id.toString(),
-      tenant_id: user.tenant_id,
-      rol: user.rol
+      userId: studentId,
+      tenant_id: row.institution_id,
+      rol: 'alumno'
     });
 
-    // Crear sesión en Redis (1 hora de TTL)
+    // Crear sesión en Redis
     const sessionData = {
-      userId: user._id.toString(),
-      email: user.email,
-      nombre: user.nombre,
-      apellido: user.apellido,
-      tenant_id: user.tenant_id,
-      rol: user.rol,
-      permisos: user.permisos,
+      userId: studentId,
+      email: row.academic_mail || email,
+      nombre: row.nombre_completo || 'Alumno',
+      apellido: '',
+      tenant_id: row.institution_id,
+      rol: 'alumno',
+      permisos: [],
       loginAt: new Date().toISOString()
     };
 
     const redisClient = redisConfig.redisClient;
-    const sessionKey = `session:${user._id.toString()}`;
+    const sessionKey = `session:${studentId}`;
 
     try {
-      await redisClient.setEx(
-        sessionKey,
-        3600, // 1 hora
-        JSON.stringify(sessionData)
-      );
-      console.log(`✓ Session created in Redis for ${user.email}`);
+      await redisClient.setEx(sessionKey, 3600, JSON.stringify(sessionData));
+      console.log(`✓ Session created in Redis for student ${sessionData.email}`);
     } catch (redisError) {
-      console.error('⚠️  Failed to create Redis session:', redisError);
-      // Continue anyway, JWT still works
+      console.error('⚠️  Failed to create Redis session (student):', redisError);
     }
 
-    // Responder con token y datos del usuario
-    res.json({
+    // Respuesta para alumno
+    return res.json({
       token,
       user: {
-        id: user._id,
-        email: user.email,
-        nombre: user.nombre,
-        apellido: user.apellido,
-        tenant_id: user.tenant_id,
-        rol: user.rol,
-        permisos: user.permisos
+        id: studentId,
+        email: sessionData.email,
+        nombre: sessionData.nombre,
+        apellido: sessionData.apellido,
+        tenant_id: sessionData.tenant_id,
+        rol: 'alumno',
+        permisos: []
       }
     });
 
