@@ -354,7 +354,7 @@ db.tenantconfigs.insertMany([
         institution: {
             name: "Universidad Tecnológica Nacional",
             short_name: "UTN",
-            type: "universidad_publica",
+            type: "Universidad Pública",
             country: "Argentina",
             city: "Buenos Aires",
             province: "CABA",
@@ -837,7 +837,7 @@ db.tenantconfigs.insertMany([
         institution: {
             name: "Universidad Torcuato Di Tella",
             short_name: "UTDT",
-            type: "universidad_privada",
+            type: "Universidad Privada",
             country: "Argentina",
             city: "Buenos Aires",
             province: "CABA",

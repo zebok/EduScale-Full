@@ -134,8 +134,15 @@ router.get('/estadisticas', authMiddleware, requireSuperAdmin, async (req, res) 
         const stats = {
             total_universidades: universidades.length,
             universidades_activas: universidades.filter(u => u.status === 'active').length,
-            universidades_publicas: universidades.filter(u => u.institution.type === 'universidad_publica').length,
-            universidades_privadas: universidades.filter(u => u.institution.type === 'universidad_privada').length,
+            // Normalizamos el campo `institution.type` para admitir seeds con "Universidad Pública/Privada"
+            universidades_publicas: universidades.filter(u => {
+                const t = (u.institution?.type || '').toString().toLowerCase();
+                return t.includes('publica');
+            }).length,
+            universidades_privadas: universidades.filter(u => {
+                const t = (u.institution?.type || '').toString().toLowerCase();
+                return t.includes('privada');
+            }).length,
             total_carreras: universidades.reduce((sum, u) => sum + (u.careers?.length || 0), 0),
             total_cupos: universidades.reduce((sum, u) =>
                 sum + (u.careers?.reduce((s, c) => s + (c.cupo_anual || 0), 0) || 0), 0
@@ -165,6 +172,57 @@ router.get('/estadisticas', authMiddleware, requireSuperAdmin, async (req, res) 
         res.status(500).json({
             error: 'Error en el servidor',
             message: 'Error al obtener las estadísticas'
+        });
+    }
+});
+
+/**
+ * GET /api/ministerio/universidades/:institution_id/inscriptos
+ * Obtener cantidad de alumnos inscriptos por universidad y desglose por carrera
+ */
+const EnrollmentRepository = require('../repositories/EnrollmentRepository');
+
+router.get('/universidades/:institution_id/inscriptos', authMiddleware, requireSuperAdmin, async (req, res) => {
+    try {
+        const { institution_id } = req.params;
+
+        // Traemos todas las inscripciones de la universidad y agregamos en memoria
+        const rows = await EnrollmentRepository.findByInstitution(institution_id);
+
+        const porEstado = {};
+        const porCarreraMap = new Map();
+
+        for (const r of rows) {
+            const st = r.enrollment_status || 'desconocido';
+            porEstado[st] = (porEstado[st] || 0) + 1;
+
+            const key = r.career_id || 'sin_carrera';
+            if (!porCarreraMap.has(key)) {
+                porCarreraMap.set(key, {
+                    career_id: r.career_id,
+                    career_name: r.career_name,
+                    count: 0,
+                    por_estado: {}
+                });
+            }
+            const agg = porCarreraMap.get(key);
+            agg.count += 1;
+            agg.por_estado[st] = (agg.por_estado[st] || 0) + 1;
+        }
+
+        const porCarrera = Array.from(porCarreraMap.values()).sort((a, b) => b.count - a.count);
+
+        return res.json({
+            institution_id,
+            total_alumnos: rows.length,
+            por_estado: porEstado,
+            por_carrera: porCarrera
+        });
+    } catch (error) {
+        console.error('Error al obtener inscriptos por universidad:', error);
+        res.status(500).json({
+            error: 'Error en el servidor',
+            message: 'Error al obtener inscriptos por universidad'
         });
     }
 });

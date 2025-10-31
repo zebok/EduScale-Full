@@ -7,6 +7,7 @@ function MinisterioDashboard() {
     const { user, logout } = useAuth();
     const [universidades, setUniversidades] = useState([]);
     const [selectedUniversidad, setSelectedUniversidad] = useState(null);
+    const [inscriptos, setInscriptos] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [estadisticas, setEstadisticas] = useState(null);
@@ -45,8 +46,12 @@ function MinisterioDashboard() {
     const loadUniversidadDetails = async (institutionId) => {
         try {
             setLoading(true);
-            const response = await axios.get(`${API_URL}/ministerio/universidades/${institutionId}`);
-            setSelectedUniversidad(response.data);
+            const [detResp, inscResp] = await Promise.all([
+                axios.get(`${API_URL}/ministerio/universidades/${institutionId}`),
+                axios.get(`${API_URL}/ministerio/universidades/${institutionId}/inscriptos`)
+            ]);
+            setSelectedUniversidad(detResp.data);
+            setInscriptos(inscResp.data);
             setShowDetails(true);
             setError(null);
         } catch (err) {
@@ -60,6 +65,7 @@ function MinisterioDashboard() {
     const closeDetails = () => {
         setShowDetails(false);
         setSelectedUniversidad(null);
+        setInscriptos(null);
     };
 
     const getStatusBadge = (status) => {
@@ -67,8 +73,9 @@ function MinisterioDashboard() {
     };
 
     const getTypeBadge = (type) => {
-        if (type === 'universidad_publica') return '🏛️ Pública';
-        if (type === 'universidad_privada') return '🏢 Privada';
+        const t = (type || '').toString().toLowerCase();
+        if (t.includes('publica')) return '🏛️ Pública';
+        if (t.includes('privada')) return '🏢 Privada';
         return type;
     };
 
@@ -331,6 +338,43 @@ function MinisterioDashboard() {
                                     ))}
                                 </div>
                             </section>
+
+                            {/* Inscriptos */}
+                            {inscriptos && (
+                                <section className="detail-section">
+                                    <h3>👥 Inscriptos</h3>
+                                    <div className="stats-mini-grid">
+                                        <div className="stat-mini neutral">
+                                            <h4>{inscriptos.total_alumnos}</h4>
+                                            <p>Total de alumnos</p>
+                                        </div>
+                                    </div>
+                                    <div className="table-container minimal">
+                                        <table className="universidades-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Carrera</th>
+                                                    <th className="text-right">Total</th>
+                                                    <th className="text-right">Matriculados</th>
+                                                    <th className="text-right">Aceptados</th>
+                                                    <th className="text-right">En revisión</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {inscriptos.por_carrera.map((c) => (
+                                                    <tr key={c.career_id}>
+                                                        <td>{c.career_name || c.career_id}</td>
+                                                        <td className="text-right"><strong>{c.count}</strong></td>
+                                                        <td className="text-right">{c.por_estado?.matriculado || 0}</td>
+                                                        <td className="text-right">{c.por_estado?.aceptado || 0}</td>
+                                                        <td className="text-right">{c.por_estado?.en_revision || 0}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </section>
+                            )}
 
                             {/* Dashboard Config */}
                             <section className="detail-section">
