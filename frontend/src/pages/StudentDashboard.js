@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import './StudentDashboard.css';
 
 const StudentDashboard = () => {
-    const { user, tenantConfig } = useAuth();
+    const { user, tenantConfig, logout } = useAuth();
+    const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'perfil'
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -49,6 +51,11 @@ const StudentDashboard = () => {
         window.open(url, '_blank');
     };
 
+    const onLogout = () => {
+        logout();
+        navigate('/login');
+    };
+
     // CSS variables sync with tenant theme
     useMemo(() => {
         const root = document.documentElement;
@@ -70,9 +77,9 @@ const StudentDashboard = () => {
                     {logo && <img src={logo} alt="logo" />}
                     <h1 style={{ margin: 0, fontSize: 20 }}>{instName} · Portal del Alumno</h1>
                 </div>
-                <div>
+                <div style={{ display: 'flex', gap: 8 }}>
                     <button className={`btn-primary`} onClick={() => setActiveTab('perfil')}>Mi Perfil</button>
-                    {/* Cerrar sesión está en la app principal; evitamos duplicar aquí */}
+                    <button className={`btn-danger`} onClick={onLogout}>Cerrar Sesión</button>
                 </div>
             </header>
 
