@@ -6,8 +6,8 @@ const rateLimit = require('express-rate-limit');
 
 // Rate limiting middleware
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 5, // máximo 5 solicitudes por ventana
+  windowMs: 1 * 60 * 1000, // 1 minuto
+  max: 200, // máximo 200 solicitudes por ventana (para permitir simulaciones)
   message: { error: 'Demasiadas solicitudes, por favor intenta más tarde.' }
 });
 
