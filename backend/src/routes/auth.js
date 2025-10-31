@@ -10,7 +10,8 @@ const { executeQuery } = require('../config/cassandra');
 // POST /api/auth/login - Login de administradores
 router.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
+  const loginIdentifier = (email || '').toLowerCase().trim();
 
     // Validar campos requeridos
     if (!email || !password) {
@@ -21,7 +22,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Buscar usuario admin por email (Mongo)
-    const user = await User.findOne({ email: email.toLowerCase() });
+  const user = await User.findOne({ email: loginIdentifier });
 
     // Verificar si el usuario está activo
     if (user) {
@@ -84,8 +85,15 @@ router.post('/login', async (req, res) => {
 
     // Flujo de login Alumno (Cassandra)
     // Buscar por email académico y contraseña en enrollments
-    const cql = `SELECT * FROM enrollments WHERE academic_mail = ? AND academic_password = ? ALLOW FILTERING`;
-    const result = await executeQuery(cql, [email, password], { prepare: true });
+    // 1) Intento por academic_mail
+    const cqlByAcademic = `SELECT * FROM enrollments WHERE academic_mail = ? AND academic_password = ? AND enrollment_status = 'matriculado' ALLOW FILTERING`;
+    let result = await executeQuery(cqlByAcademic, [loginIdentifier, password], { prepare: true });
+
+    // 2) Si no hay resultados, intento por email personal
+    if (!result || result.rowLength === 0) {
+      const cqlByPersonal = `SELECT * FROM enrollments WHERE email = ? AND academic_password = ? AND enrollment_status = 'matriculado' ALLOW FILTERING`;
+      result = await executeQuery(cqlByPersonal, [loginIdentifier, password], { prepare: true });
+    }
 
     if (!result || result.rowLength === 0) {
       return res.status(401).json({
@@ -95,7 +103,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Tomar la primera coincidencia (un alumno puede tener múltiples carreras; aquí simplificamos)
-    const row = result.rows[0];
+  const row = result.rows[0];
 
     // Generar un userId estable para alumnos (usar enrollment_id si existe, sino academic_mail)
     const studentId = (row.enrollment_id && row.enrollment_id.toString()) || `student:${row.academic_mail}`;
@@ -110,7 +118,7 @@ router.post('/login', async (req, res) => {
     // Crear sesión en Redis
     const sessionData = {
       userId: studentId,
-      email: row.academic_mail || email,
+      email: row.academic_mail || row.email || loginIdentifier,
       nombre: row.nombre_completo || 'Alumno',
       apellido: '',
       tenant_id: row.institution_id,
