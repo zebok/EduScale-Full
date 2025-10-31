@@ -30,9 +30,9 @@ db.tenantconfigs.insertMany([
         domain: "uba.eduscale.com",
         branding: {
             theme: {
-                primary_color: "#002C5F",
-                secondary_color: "#FFD700",
-                accent_color: "#004080",
+                primary_color: "#0B3A6A",    // Deep academic blue
+                secondary_color: "#C9A227",  // Academic gold
+                accent_color: "#1E4976",     // Slate blue
                 font_family: "Roboto"
             },
             logo_url: "https://upload.wikimedia.org/wikipedia/commons/a/a3/UBA.png"
@@ -150,9 +150,9 @@ db.tenantconfigs.insertMany([
         domain: "uca.eduscale.com",
         branding: {
             theme: {
-                primary_color: "#8B0000",
-                secondary_color: "#FFD700",
-                accent_color: "#B22222",
+                primary_color: "#7A0019",   // Oxford maroon
+                secondary_color: "#C9A227", // Academic gold
+                accent_color: "#4E000F",    // Deep maroon
                 font_family: "Merriweather"
             },
             logo_url: "https://upload.wikimedia.org/wikipedia/commons/c/cb/Universidad_Cat%C3%B3lica_Argentina.png"
@@ -272,9 +272,9 @@ db.tenantconfigs.insertMany([
         domain: "itba.eduscale.com",
         branding: {
             theme: {
-                primary_color: "#003366",
-                secondary_color: "#0066CC",
-                accent_color: "#FF6600",
+                primary_color: "#0A3D62",   // Prussian blue
+                secondary_color: "#2C647F", // Steel blue
+                accent_color: "#6C757D",    // Cool gray
                 font_family: "Open Sans"
             },
             logo_url: "https://centros-investigacion.s3.sa-east-1.amazonaws.com/wp-content/uploads/sites/14/2020/11/logo-itba-site.png"
@@ -369,9 +369,9 @@ db.tenantconfigs.insertMany([
         domain: "utn.eduscale.com",
         branding: {
             theme: {
-                primary_color: "#0052A3",
-                secondary_color: "#00A3E0",
-                accent_color: "#FF6B35",
+                primary_color: "#0B3C5D",   // Deep blue
+                secondary_color: "#328CC1", // Academic blue
+                accent_color: "#1D2731",    // Charcoal
                 font_family: "Lato"
             },
             logo_url: "https://images.seeklogo.com/logo-png/14/2/universidad-tecnologica-nacional-logo-png_seeklogo-145804.png"
@@ -464,9 +464,9 @@ db.tenantconfigs.insertMany([
         domain: "palermo.eduscale.com",
         branding: {
             theme: {
-                primary_color: "#E31E24",
-                secondary_color: "#2C2E35",
-                accent_color: "#F7941D",
+                primary_color: "#1F2937",   // Gray 800
+                secondary_color: "#374151", // Gray 700
+                accent_color: "#0EA5E9",    // Academic cyan
                 font_family: "Montserrat"
             },
             logo_url: "https://images.seeklogo.com/logo-png/14/2/universidad-de-palermo-logo-png_seeklogo-145717.png"
@@ -562,9 +562,9 @@ db.tenantconfigs.insertMany([
         domain: "unlp.eduscale.com",
         branding: {
             theme: {
-                primary_color: "#8B1A1A",
-                secondary_color: "#FFD700",
-                accent_color: "#CD853F",
+                primary_color: "#7B1113",   // Garnet
+                secondary_color: "#C0A062", // Antique gold
+                accent_color: "#2F3E46",    // Slate
                 font_family: "Source Sans Pro"
             },
             logo_url: "https://upload.wikimedia.org/wikipedia/commons/7/74/UNLP_Logo_%28cropped%29.svg"
@@ -657,9 +657,9 @@ db.tenantconfigs.insertMany([
         domain: "uade.eduscale.com",
         branding: {
             theme: {
-                primary_color: "#003DA5",
-                secondary_color: "#00AEEF",
-                accent_color: "#F7931E",
+                primary_color: "#003DA5",   // UADE blue
+                secondary_color: "#0B61BF", // Royal blue
+                accent_color: "#1E3A8A",    // Indigo 800
                 font_family: "Raleway"
             },
             logo_url: "https://www.institucionulloa.com.ar/wp-content/uploads/2020/05/logo_mesa-de-trabajo-1-copia.png"
@@ -755,9 +755,9 @@ db.tenantconfigs.insertMany([
         domain: "austral.eduscale.com",
         branding: {
             theme: {
-                primary_color: "#003B71",
-                secondary_color: "#0066B3",
-                accent_color: "#E84E0F",
+                primary_color: "#003B71",   // Deep navy
+                secondary_color: "#2B6CB0", // Academic blue
+                accent_color: "#6C757D",    // Cool gray
                 font_family: "Nunito"
             },
             logo_url: "https://www.austral.edu.ar/wp-content/uploads/2022/09/logo-footer.png?x65960&x65960"
@@ -852,9 +852,9 @@ db.tenantconfigs.insertMany([
         domain: "utdt.eduscale.com",
         branding: {
             theme: {
-                primary_color: "#8B0000",
-                secondary_color: "#4B0000",
-                accent_color: "#C0C0C0",
+                primary_color: "#121212",   // Charcoal/near-black
+                secondary_color: "#B8860B", // Dark gold
+                accent_color: "#2C2C2C",    // Charcoal
                 font_family: "Georgia"
             },
             logo_url: "https://www.helpargentina.org/images/default/ong/cuadrado_utdt-0155.png"
@@ -949,9 +949,9 @@ db.tenantconfigs.insertMany([
         domain: "unc.eduscale.com",
         branding: {
             theme: {
-                primary_color: "#003C71",
-                secondary_color: "#FFB81C",
-                accent_color: "#9E1B32",
+                primary_color: "#003366",   // Midnight blue
+                secondary_color: "#B8860B", // Dark gold
+                accent_color: "#2F4F4F",    // Dark slate gray
                 font_family: "Arial"
             },
             logo_url: "https://upload.wikimedia.org/wikipedia/commons/c/c4/Escudo_UNC.png"
