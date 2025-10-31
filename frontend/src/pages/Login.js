@@ -23,7 +23,8 @@ function Login() {
       // Redirigir según el rol del usuario
       if (result.user.rol === 'super_admin') {
         navigate('/ministerio');
-      } else if (result.user.rol === 'alumno') {
+      } else if (result.user.rol === 'alumno' || result.user.rol === 'viewer') {
+        // 'viewer' es el rol de alumnos en MongoDB, 'alumno' es legacy de Cassandra
         navigate('/alumno');
       } else {
         navigate('/dashboard');

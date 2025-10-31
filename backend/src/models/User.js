@@ -40,6 +40,43 @@ const userSchema = new mongoose.Schema({
   },
   ultimo_login: {
     type: Date
+  },
+
+  // ============================================
+  // CAMPOS PARA ALUMNOS (rol='viewer')
+  // ============================================
+  documento: {
+    type: String,
+    sparse: true
+  },
+  tipo_documento: {
+    type: String,
+    enum: ['DNI', 'Pasaporte', 'CI'],
+    default: 'DNI'
+  },
+  telefono: {
+    type: String
+  },
+  fecha_nacimiento: {
+    type: Date
+  },
+  foto_perfil_url: {
+    type: String
+  },
+  preferencias: {
+    tema: {
+      type: String,
+      enum: ['light', 'dark'],
+      default: 'light'
+    },
+    idioma: {
+      type: String,
+      default: 'es'
+    },
+    notificaciones: {
+      type: Boolean,
+      default: true
+    }
   }
 }, {
   timestamps: true

@@ -21,12 +21,11 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // Buscar usuario admin por email (Mongo)
+    // Buscar usuario en MongoDB (admin o viewer/alumno)
     const user = await User.findOne({ email: loginIdentifier });
 
-    // Verificar si el usuario está activo
+    // Si encontramos usuario en MongoDB, verificar credenciales
     if (user) {
-      // Flujo de login Admin (Mongo)
       if (!user.activo) {
         return res.status(401).json({
           error: 'Usuario inactivo',
@@ -35,9 +34,8 @@ router.post('/login', async (req, res) => {
       }
 
       const isPasswordValid = await bcrypt.compare(password, user.password);
-      if (!isPasswordValid) {
-        // Si la contraseña no coincide para admin, no devolvemos aún, probamos flujo alumno
-      } else {
+      if (isPasswordValid) {
+        // Login exitoso desde MongoDB
         user.ultimo_login = new Date();
         await user.save();
 
@@ -63,7 +61,7 @@ router.post('/login', async (req, res) => {
 
         try {
           await redisClient.setEx(sessionKey, 3600, JSON.stringify(sessionData));
-          console.log(`✓ Session created in Redis for ${user.email}`);
+          console.log(`✓ Session created in Redis for ${user.email} (MongoDB)`);
         } catch (redisError) {
           console.error('⚠️  Failed to create Redis session:', redisError);
         }
@@ -81,10 +79,15 @@ router.post('/login', async (req, res) => {
           }
         });
       }
+      // Si password no coincide en MongoDB, caemos al fallback de Cassandra
     }
 
-    // Flujo de login Alumno (Cassandra)
-    // Buscar por email académico y contraseña en enrollments
+    // ============================================
+    // FALLBACK: Login Alumno desde Cassandra (legacy)
+    // Este flujo se mantendrá hasta migrar todos los alumnos a MongoDB
+    // ============================================
+    console.log('⚠️  Attempting legacy Cassandra login for:', loginIdentifier);
+
     // 1) Intento por academic_mail
     const cqlByAcademic = `SELECT * FROM enrollments WHERE academic_mail = ? AND academic_password = ? AND enrollment_status = 'matriculado' ALLOW FILTERING`;
     let result = await executeQuery(cqlByAcademic, [loginIdentifier, password], { prepare: true });
@@ -182,10 +185,14 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// POST /api/auth/register - Registrar nuevo usuario admin (solo para testing)
+// POST /api/auth/register - Registrar nuevo usuario (admin o alumno/viewer)
 router.post('/register', async (req, res) => {
   try {
-    const { email, password, nombre, apellido, tenant_id, rol } = req.body;
+    const {
+      email, password, nombre, apellido, tenant_id, rol,
+      // Campos adicionales para alumnos (rol='viewer')
+      documento, tipo_documento, telefono, fecha_nacimiento
+    } = req.body;
 
     // Validar campos requeridos
     if (!email || !password || !nombre || !apellido || !tenant_id) {
@@ -207,15 +214,25 @@ router.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Crear nuevo usuario
-    const newUser = new User({
+    const userData = {
       email: email.toLowerCase(),
       password: hashedPassword,
       nombre,
       apellido,
       tenant_id,
       rol: rol || 'admin'
-    });
+    };
 
+    // Si es alumno (viewer), agregar campos adicionales
+    if (rol === 'viewer') {
+      if (documento) userData.documento = documento;
+      if (tipo_documento) userData.tipo_documento = tipo_documento;
+      if (telefono) userData.telefono = telefono;
+      if (fecha_nacimiento) userData.fecha_nacimiento = fecha_nacimiento;
+      userData.permisos = []; // Alumnos no tienen permisos administrativos
+    }
+
+    const newUser = new User(userData);
     await newUser.save();
 
     res.status(201).json({

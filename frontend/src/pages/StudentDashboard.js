@@ -12,6 +12,24 @@ const StudentDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
+    // Profile state
+    const [profile, setProfile] = useState(null);
+    const [profileLoading, setProfileLoading] = useState(false);
+    const [editMode, setEditMode] = useState(false);
+    const [profileForm, setProfileForm] = useState({
+        nombre: '',
+        apellido: '',
+        telefono: '',
+        fecha_nacimiento: '',
+        foto_perfil_url: ''
+    });
+    const [preferences, setPreferences] = useState({
+        tema: 'light',
+        idioma: 'es',
+        notificaciones: true
+    });
+    const [saveSuccess, setSaveSuccess] = useState('');
+
     const primary = tenantConfig?.branding?.theme?.primary_color || '#0d47a1';
     const secondary = tenantConfig?.branding?.theme?.secondary_color || '#1976d2';
     const accent = tenantConfig?.branding?.theme?.accent_color || '#22c55e';
@@ -37,6 +55,61 @@ const StudentDashboard = () => {
         fetchOverview();
         return () => { mounted = false; };
     }, []);
+
+    // Fetch profile when switching to perfil tab
+    useEffect(() => {
+        if (activeTab === 'perfil' && user?.rol === 'viewer' && !profile) {
+            fetchProfile();
+        }
+    }, [activeTab]);
+
+    const fetchProfile = async () => {
+        try {
+            setProfileLoading(true);
+            const res = await axios.get('http://localhost:5001/api/student/me/profile');
+            setProfile(res.data.profile);
+            setPreferences(res.data.preferencias || { tema: 'light', idioma: 'es', notificaciones: true });
+
+            // Initialize form
+            setProfileForm({
+                nombre: res.data.profile.nombre || '',
+                apellido: res.data.profile.apellido || '',
+                telefono: res.data.profile.telefono || '',
+                fecha_nacimiento: res.data.profile.fecha_nacimiento ? res.data.profile.fecha_nacimiento.split('T')[0] : '',
+                foto_perfil_url: res.data.profile.foto_perfil_url || ''
+            });
+        } catch (e) {
+            console.error('Error cargando perfil:', e);
+        } finally {
+            setProfileLoading(false);
+        }
+    };
+
+    const handleProfileUpdate = async () => {
+        try {
+            setSaveSuccess('');
+            await axios.put('http://localhost:5001/api/student/me/profile', profileForm);
+            setSaveSuccess('✅ Perfil actualizado exitosamente');
+            setEditMode(false);
+            fetchProfile(); // Refresh
+            setTimeout(() => setSaveSuccess(''), 3000);
+        } catch (e) {
+            console.error('Error actualizando perfil:', e);
+            alert('Error al actualizar perfil: ' + (e.response?.data?.error || e.message));
+        }
+    };
+
+    const handlePreferencesUpdate = async (newPrefs) => {
+        try {
+            await axios.put('http://localhost:5001/api/student/me/preferences', newPrefs);
+            setPreferences(newPrefs);
+            setSaveSuccess('✅ Preferencias actualizadas');
+            setTimeout(() => setSaveSuccess(''), 3000);
+        } catch (e) {
+            console.error('Error actualizando preferencias:', e);
+            alert('Error al actualizar preferencias: ' + (e.response?.data?.error || e.message));
+        }
+    };
 
     const Card = ({ title, children }) => (
         <div className="section-card">
@@ -190,26 +263,138 @@ const StudentDashboard = () => {
                                     </div>
                                 </div>
 
-                                <div className="profile-grid">
-                                    <Card title="👤 Información Personal">
-                                        <div className="info-list">
-                                            <div className="info-row"><div className="info-key">Nombre Completo:</div><div className="info-val">{data.student?.nombre_completo || '-'}</div></div>
-                                            <div className="info-row"><div className="info-key">Email Personal:</div><div className="info-val">{data.student?.email_personal || '-'}</div></div>
-                                            <div className="info-row"><div className="info-key">Email Académico:</div><div className="info-val">{data.student?.academic_mail || '-'}</div></div>
+                                {saveSuccess && <div style={{ padding: '12px', background: '#d1fae5', color: '#065f46', borderRadius: '8px', marginBottom: '16px' }}>{saveSuccess}</div>}
+
+                                {user?.rol === 'viewer' && !profileLoading && profile ? (
+                                    <>
+                                        <div className="profile-grid">
+                                            <Card title="👤 Información Personal">
+                                                {!editMode ? (
+                                                    <>
+                                                        <div className="info-list">
+                                                            <div className="info-row"><div className="info-key">Nombre:</div><div className="info-val">{profile.nombre || '-'}</div></div>
+                                                            <div className="info-row"><div className="info-key">Apellido:</div><div className="info-val">{profile.apellido || '-'}</div></div>
+                                                            <div className="info-row"><div className="info-key">Email:</div><div className="info-val">{profile.email || '-'}</div></div>
+                                                            <div className="info-row"><div className="info-key">Documento:</div><div className="info-val">{profile.documento || '-'}</div></div>
+                                                            <div className="info-row"><div className="info-key">Teléfono:</div><div className="info-val">{profile.telefono || '-'}</div></div>
+                                                            <div className="info-row"><div className="info-key">Fecha Nac.:</div><div className="info-val">{profile.fecha_nacimiento ? new Date(profile.fecha_nacimiento).toLocaleDateString('es-AR') : '-'}</div></div>
+                                                        </div>
+                                                        <button className="btn-primary" style={{ marginTop: '12px' }} onClick={() => setEditMode(true)}>✏️ Editar Perfil</button>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                                            <input type="text" placeholder="Nombre" value={profileForm.nombre} onChange={(e) => setProfileForm({ ...profileForm, nombre: e.target.value })} style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }} />
+                                                            <input type="text" placeholder="Apellido" value={profileForm.apellido} onChange={(e) => setProfileForm({ ...profileForm, apellido: e.target.value })} style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }} />
+                                                            <input type="tel" placeholder="Teléfono" value={profileForm.telefono} onChange={(e) => setProfileForm({ ...profileForm, telefono: e.target.value })} style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }} />
+                                                            <input type="date" placeholder="Fecha Nacimiento" value={profileForm.fecha_nacimiento} onChange={(e) => setProfileForm({ ...profileForm, fecha_nacimiento: e.target.value })} style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }} />
+                                                            <input type="url" placeholder="URL Foto de Perfil" value={profileForm.foto_perfil_url} onChange={(e) => setProfileForm({ ...profileForm, foto_perfil_url: e.target.value })} style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }} />
+                                                        </div>
+                                                        <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                                                            <button className="btn-primary" onClick={handleProfileUpdate}>💾 Guardar</button>
+                                                            <button className="btn-danger" onClick={() => setEditMode(false)}>Cancelar</button>
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </Card>
+
+                                            <Card title="⚙️ Preferencias">
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                                                    <div>
+                                                        <div style={{ fontWeight: 600, marginBottom: '6px' }}>Tema</div>
+                                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                                            <button
+                                                                style={{
+                                                                    padding: '8px 16px',
+                                                                    border: preferences.tema === 'light' ? '2px solid ' + primary : '1px solid #ccc',
+                                                                    borderRadius: '6px',
+                                                                    background: preferences.tema === 'light' ? '#f0f9ff' : 'white',
+                                                                    cursor: 'pointer'
+                                                                }}
+                                                                onClick={() => handlePreferencesUpdate({ ...preferences, tema: 'light' })}
+                                                            >
+                                                                ☀️ Claro
+                                                            </button>
+                                                            <button
+                                                                style={{
+                                                                    padding: '8px 16px',
+                                                                    border: preferences.tema === 'dark' ? '2px solid ' + primary : '1px solid #ccc',
+                                                                    borderRadius: '6px',
+                                                                    background: preferences.tema === 'dark' ? '#1e293b' : 'white',
+                                                                    color: preferences.tema === 'dark' ? 'white' : 'black',
+                                                                    cursor: 'pointer'
+                                                                }}
+                                                                onClick={() => handlePreferencesUpdate({ ...preferences, tema: 'dark' })}
+                                                            >
+                                                                🌙 Oscuro
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <div style={{ fontWeight: 600, marginBottom: '6px' }}>Notificaciones</div>
+                                                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={preferences.notificaciones}
+                                                                onChange={(e) => handlePreferencesUpdate({ ...preferences, notificaciones: e.target.checked })}
+                                                            />
+                                                            <span>Recibir notificaciones por email</span>
+                                                        </label>
+                                                    </div>
+
+                                                    <div>
+                                                        <div style={{ fontWeight: 600, marginBottom: '6px' }}>Idioma</div>
+                                                        <select
+                                                            value={preferences.idioma}
+                                                            onChange={(e) => handlePreferencesUpdate({ ...preferences, idioma: e.target.value })}
+                                                            style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px', width: '100%' }}
+                                                        >
+                                                            <option value="es">Español</option>
+                                                            <option value="en">English</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </Card>
                                         </div>
-                                    </Card>
-                                    <Card title="🎓 Información Académica">
-                                        <div className="info-list">
-                                            <div className="info-row"><div className="info-key">Universidad:</div><div className="info-val">{data.institution?.name || instName}</div></div>
-                                            <div className="info-row"><div className="info-key">Carrera:</div><div className="info-val">{data.career?.name || '-'}</div></div>
-                                            <div className="info-row"><div className="info-key">Facultad:</div><div className="info-val">{data.career?.faculty || '-'}</div></div>
-                                            <div className="info-row"><div className="info-key">Duración:</div><div className="info-val">{data.career?.duration_years ? `${data.career.duration_years} años` : '-'}</div></div>
-                                            <div className="info-row"><div className="info-key">Años Restantes:</div><div className="info-val" style={{ fontWeight: 700 }}>{data.progress?.years_left ?? '-'}</div></div>
-                                            <div className="info-row"><div className="info-key">Modalidad:</div><div className="info-val">Presencial</div></div>
-                                            <div className="info-row"><div className="info-key">Turno:</div><div className="info-val">Tiempo completo</div></div>
-                                        </div>
-                                    </Card>
-                                </div>
+
+                                        <Card title="🎓 Información Académica">
+                                            <div className="info-list">
+                                                <div className="info-row"><div className="info-key">Universidad:</div><div className="info-val">{data.institution?.name || instName}</div></div>
+                                                <div className="info-row"><div className="info-key">Carrera:</div><div className="info-val">{data.career?.name || '-'}</div></div>
+                                                <div className="info-row"><div className="info-key">Facultad:</div><div className="info-val">{data.career?.faculty || '-'}</div></div>
+                                                <div className="info-row"><div className="info-key">Duración:</div><div className="info-val">{data.career?.duration_years ? `${data.career.duration_years} años` : '-'}</div></div>
+                                                <div className="info-row"><div className="info-key">Años Restantes:</div><div className="info-val" style={{ fontWeight: 700 }}>{data.progress?.years_left ?? '-'}</div></div>
+                                            </div>
+                                        </Card>
+                                    </>
+                                ) : user?.rol !== 'viewer' ? (
+                                    <div style={{ padding: '20px', textAlign: 'center', color: '#64748b' }}>
+                                        <p>⚠️ Los perfiles personalizados solo están disponibles para usuarios en MongoDB.</p>
+                                        <p>Tu cuenta actual usa el sistema legacy de Cassandra.</p>
+                                    </div>
+                                ) : profileLoading ? (
+                                    <div style={{ textAlign: 'center', padding: '20px' }}>Cargando perfil...</div>
+                                ) : (
+                                    <div className="profile-grid">
+                                        <Card title="👤 Información Personal">
+                                            <div className="info-list">
+                                                <div className="info-row"><div className="info-key">Nombre Completo:</div><div className="info-val">{data.student?.nombre_completo || '-'}</div></div>
+                                                <div className="info-row"><div className="info-key">Email Personal:</div><div className="info-val">{data.student?.email_personal || '-'}</div></div>
+                                                <div className="info-row"><div className="info-key">Email Académico:</div><div className="info-val">{data.student?.academic_mail || '-'}</div></div>
+                                            </div>
+                                        </Card>
+                                        <Card title="🎓 Información Académica">
+                                            <div className="info-list">
+                                                <div className="info-row"><div className="info-key">Universidad:</div><div className="info-val">{data.institution?.name || instName}</div></div>
+                                                <div className="info-row"><div className="info-key">Carrera:</div><div className="info-val">{data.career?.name || '-'}</div></div>
+                                                <div className="info-row"><div className="info-key">Facultad:</div><div className="info-val">{data.career?.faculty || '-'}</div></div>
+                                                <div className="info-row"><div className="info-key">Duración:</div><div className="info-val">{data.career?.duration_years ? `${data.career.duration_years} años` : '-'}</div></div>
+                                                <div className="info-row"><div className="info-key">Años Restantes:</div><div className="info-val" style={{ fontWeight: 700 }}>{data.progress?.years_left ?? '-'}</div></div>
+                                            </div>
+                                        </Card>
+                                    </div>
+                                )}
                             </>
                         )}
                     </div>

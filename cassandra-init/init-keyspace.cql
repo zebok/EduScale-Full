@@ -263,3 +263,198 @@ INSERT INTO enrollments (
   'Universidad Nacional de Córdoba', 'Medicina', 2025, 'matriculado',
   'alumno@universidad-nacional-cordoba.edu', 'Estudiante2025!', toTimestamp(now())
 );
+
+-- ===============================================
+-- INSCRIPCIONES PARA ALUMNOS EN MONGODB (rol='viewer')
+-- Estos alumnos hacen login con MongoDB pero necesitan enrollments en Cassandra
+-- ===============================================
+
+-- 1) UBA - alumno.uba@demo.com (Juan Pérez)
+INSERT INTO enrollments (
+  institution_id, email, career_id, enrollment_id, nombre_completo,
+  documento, tipo_documento, telefono, fecha_nacimiento,
+  institution_name, career_name, career_faculty,
+  academic_year, enrollment_period,
+  enrollment_status, enrollment_date, matriculation_date,
+  document_status, payment_status,
+  created_at, updated_at
+) VALUES (
+  'universidad-buenos-aires', 'alumno.uba@demo.com', 'uba_medicina', uuid(), 'Juan Pérez',
+  '40123456', 'DNI', '+54 11 1234-5678', '2000-05-15',
+  'Universidad de Buenos Aires', 'Medicina', 'Facultad de Medicina',
+  2025, '2025-1',
+  'matriculado', toTimestamp(now()), toTimestamp(now()),
+  'verificado', 'completo',
+  toTimestamp(now()), toTimestamp(now())
+);
+
+-- 2) UCA - alumno.uca@demo.com (María González)
+INSERT INTO enrollments (
+  institution_id, email, career_id, enrollment_id, nombre_completo,
+  documento, tipo_documento, telefono, fecha_nacimiento,
+  institution_name, career_name, career_faculty,
+  academic_year, enrollment_period,
+  enrollment_status, enrollment_date, matriculation_date,
+  document_status, payment_status,
+  created_at, updated_at
+) VALUES (
+  'universidad-catolica-argentina', 'alumno.uca@demo.com', 'uca_derecho', uuid(), 'María González',
+  '41234567', 'DNI', '+54 11 2345-6789', '2001-03-20',
+  'Universidad Católica Argentina', 'Abogacía', 'Facultad de Derecho',
+  2025, '2025-1',
+  'matriculado', toTimestamp(now()), toTimestamp(now()),
+  'verificado', 'completo',
+  toTimestamp(now()), toTimestamp(now())
+);
+
+-- 3) ITBA - alumno.itba@demo.com (Carlos Rodríguez)
+INSERT INTO enrollments (
+  institution_id, email, career_id, enrollment_id, nombre_completo,
+  documento, tipo_documento, telefono, fecha_nacimiento,
+  institution_name, career_name, career_faculty,
+  academic_year, enrollment_period,
+  enrollment_status, enrollment_date, matriculation_date,
+  document_status, payment_status,
+  created_at, updated_at
+) VALUES (
+  'instituto-tecnologico-buenos-aires', 'alumno.itba@demo.com', 'itba_informatica', uuid(), 'Carlos Rodríguez',
+  '42345678', 'DNI', '+54 11 3456-7890', '2002-07-10',
+  'Instituto Tecnológico de Buenos Aires', 'Ingeniería Informática', 'Escuela de Ingeniería',
+  2025, '2025-1',
+  'matriculado', toTimestamp(now()), toTimestamp(now()),
+  'verificado', 'completo',
+  toTimestamp(now()), toTimestamp(now())
+);
+
+-- 4) UTN - alumno.utn@demo.com (Ana Martínez)
+INSERT INTO enrollments (
+  institution_id, email, career_id, enrollment_id, nombre_completo,
+  documento, tipo_documento, telefono, fecha_nacimiento,
+  institution_name, career_name, career_faculty,
+  academic_year, enrollment_period,
+  enrollment_status, enrollment_date, matriculation_date,
+  document_status, payment_status,
+  created_at, updated_at
+) VALUES (
+  'universidad-tecnologica-nacional', 'alumno.utn@demo.com', 'utn_sistemas', uuid(), 'Ana Martínez',
+  '43456789', 'DNI', '+54 11 4567-8901', '2001-11-25',
+  'Universidad Tecnológica Nacional', 'Ingeniería en Sistemas de Información', 'Facultad Regional Buenos Aires',
+  2025, '2025-1',
+  'matriculado', toTimestamp(now()), toTimestamp(now()),
+  'verificado', 'completo',
+  toTimestamp(now()), toTimestamp(now())
+);
+
+-- 5) Universidad de Palermo - alumno.up@demo.com (Lucía Fernández)
+INSERT INTO enrollments (
+  institution_id, email, career_id, enrollment_id, nombre_completo,
+  documento, tipo_documento, telefono, fecha_nacimiento,
+  institution_name, career_name, career_faculty,
+  academic_year, enrollment_period,
+  enrollment_status, enrollment_date, matriculation_date,
+  document_status, payment_status,
+  created_at, updated_at
+) VALUES (
+  'universidad-palermo', 'alumno.up@demo.com', 'up_diseno_grafico', uuid(), 'Lucía Fernández',
+  '44567890', 'DNI', '+54 11 5678-9012', '2002-01-30',
+  'Universidad de Palermo', 'Diseño Gráfico', 'Facultad de Diseño y Comunicación',
+  2025, '2025-1',
+  'matriculado', toTimestamp(now()), toTimestamp(now()),
+  'verificado', 'completo',
+  toTimestamp(now()), toTimestamp(now())
+);
+
+-- 6) UNLP - alumno.unlp@demo.com (Diego López)
+INSERT INTO enrollments (
+  institution_id, email, career_id, enrollment_id, nombre_completo,
+  documento, tipo_documento, telefono, fecha_nacimiento,
+  institution_name, career_name, career_faculty,
+  academic_year, enrollment_period,
+  enrollment_status, enrollment_date, matriculation_date,
+  document_status, payment_status,
+  created_at, updated_at
+) VALUES (
+  'universidad-nacional-la-plata', 'alumno.unlp@demo.com', 'unlp_informatica', uuid(), 'Diego López',
+  '45678901', 'DNI', '+54 221 6789-0123', '2000-09-12',
+  'Universidad Nacional de La Plata', 'Licenciatura en Informática', 'Facultad de Informática',
+  2025, '2025-1',
+  'matriculado', toTimestamp(now()), toTimestamp(now()),
+  'verificado', 'completo',
+  toTimestamp(now()), toTimestamp(now())
+);
+
+-- 7) UADE - alumno.uade@demo.com (Sofía Ramírez)
+INSERT INTO enrollments (
+  institution_id, email, career_id, enrollment_id, nombre_completo,
+  documento, tipo_documento, telefono, fecha_nacimiento,
+  institution_name, career_name, career_faculty,
+  academic_year, enrollment_period,
+  enrollment_status, enrollment_date, matriculation_date,
+  document_status, payment_status,
+  created_at, updated_at
+) VALUES (
+  'universidad-argentina-empresa', 'alumno.uade@demo.com', 'uade_administracion', uuid(), 'Sofía Ramírez',
+  '46789012', 'DNI', '+54 11 7890-1234', '2001-06-18',
+  'Universidad Argentina de la Empresa', 'Administración de Empresas', 'Facultad de Ciencias Empresariales',
+  2025, '2025-1',
+  'matriculado', toTimestamp(now()), toTimestamp(now()),
+  'verificado', 'completo',
+  toTimestamp(now()), toTimestamp(now())
+);
+
+-- 8) Universidad Austral - alumno.austral@demo.com (Tomás Silva)
+INSERT INTO enrollments (
+  institution_id, email, career_id, enrollment_id, nombre_completo,
+  documento, tipo_documento, telefono, fecha_nacimiento,
+  institution_name, career_name, career_faculty,
+  academic_year, enrollment_period,
+  enrollment_status, enrollment_date, matriculation_date,
+  document_status, payment_status,
+  created_at, updated_at
+) VALUES (
+  'universidad-austral', 'alumno.austral@demo.com', 'austral_medicina', uuid(), 'Tomás Silva',
+  '47890123', 'DNI', '+54 230 8901-2345', '2002-04-22',
+  'Universidad Austral', 'Medicina', 'Facultad de Ciencias Biomédicas',
+  2025, '2025-1',
+  'matriculado', toTimestamp(now()), toTimestamp(now()),
+  'verificado', 'completo',
+  toTimestamp(now()), toTimestamp(now())
+);
+
+-- 9) UTDT - alumno.utdt@demo.com (Valentina Torres)
+INSERT INTO enrollments (
+  institution_id, email, career_id, enrollment_id, nombre_completo,
+  documento, tipo_documento, telefono, fecha_nacimiento,
+  institution_name, career_name, career_faculty,
+  academic_year, enrollment_period,
+  enrollment_status, enrollment_date, matriculation_date,
+  document_status, payment_status,
+  created_at, updated_at
+) VALUES (
+  'universidad-torcuato-di-tella', 'alumno.utdt@demo.com', 'utdt_economia', uuid(), 'Valentina Torres',
+  '48901234', 'DNI', '+54 11 9012-3456', '2001-12-05',
+  'Universidad Torcuato Di Tella', 'Licenciatura en Economía', 'Departamento de Economía',
+  2025, '2025-1',
+  'matriculado', toTimestamp(now()), toTimestamp(now()),
+  'verificado', 'completo',
+  toTimestamp(now()), toTimestamp(now())
+);
+
+-- 10) UNC - alumno.unc@demo.com (Martín Ruiz)
+INSERT INTO enrollments (
+  institution_id, email, career_id, enrollment_id, nombre_completo,
+  documento, tipo_documento, telefono, fecha_nacimiento,
+  institution_name, career_name, career_faculty,
+  academic_year, enrollment_period,
+  enrollment_status, enrollment_date, matriculation_date,
+  document_status, payment_status,
+  created_at, updated_at
+) VALUES (
+  'universidad-nacional-cordoba', 'alumno.unc@demo.com', 'unc_medicina', uuid(), 'Martín Ruiz',
+  '49012345', 'DNI', '+54 351 0123-4567', '2000-08-28',
+  'Universidad Nacional de Córdoba', 'Medicina', 'Facultad de Ciencias Médicas',
+  2025, '2025-1',
+  'matriculado', toTimestamp(now()), toTimestamp(now()),
+  'verificado', 'completo',
+  toTimestamp(now()), toTimestamp(now())
+);

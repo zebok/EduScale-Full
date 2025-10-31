@@ -3,14 +3,15 @@ const router = express.Router();
 const authMiddleware = require('../middleware/authMiddleware');
 const EnrollmentRepository = require('../repositories/EnrollmentRepository');
 const TenantConfig = require('../models/TenantConfig');
+const User = require('../models/User');
 const { Expediente } = require('../config/mongodb');
 
 // All student endpoints require auth
 router.use(authMiddleware);
 
-// Only allow role 'alumno'
+// Allow both 'alumno' (legacy Cassandra) and 'viewer' (MongoDB)
 router.use((req, res, next) => {
-    if (req.user.rol !== 'alumno') {
+    if (req.user.rol !== 'alumno' && req.user.rol !== 'viewer') {
         return res.status(403).json({ error: 'Acceso denegado', message: 'Solo alumnos' });
     }
     next();
@@ -122,6 +123,151 @@ router.get('/me/overview', async (req, res) => {
     } catch (error) {
         console.error('Error in student/me/overview:', error);
         return res.status(500).json({ error: 'Error al obtener datos' });
+    }
+});
+
+/**
+ * GET /api/student/me/profile
+ * Get student profile from MongoDB (User model)
+ */
+router.get('/me/profile', async (req, res) => {
+    try {
+        const userId = req.user.userId;
+
+        // Only works for users in MongoDB (rol='viewer')
+        if (req.user.rol !== 'viewer') {
+            return res.status(400).json({
+                error: 'Perfil no disponible',
+                message: 'Los perfiles personalizados solo están disponibles para usuarios en MongoDB'
+            });
+        }
+
+        const user = await User.findById(userId).select('-password');
+
+        if (!user) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+
+        return res.json({
+            profile: {
+                id: user._id,
+                email: user.email,
+                nombre: user.nombre,
+                apellido: user.apellido,
+                documento: user.documento,
+                tipo_documento: user.tipo_documento,
+                telefono: user.telefono,
+                fecha_nacimiento: user.fecha_nacimiento,
+                foto_perfil_url: user.foto_perfil_url,
+                tenant_id: user.tenant_id,
+                activo: user.activo,
+                ultimo_login: user.ultimo_login
+            },
+            preferencias: user.preferencias || {
+                tema: 'light',
+                idioma: 'es',
+                notificaciones: true
+            }
+        });
+    } catch (error) {
+        console.error('Error in student/me/profile:', error);
+        return res.status(500).json({ error: 'Error al obtener perfil' });
+    }
+});
+
+/**
+ * PUT /api/student/me/profile
+ * Update student profile (personal data)
+ */
+router.put('/me/profile', async (req, res) => {
+    try {
+        const userId = req.user.userId;
+
+        if (req.user.rol !== 'viewer') {
+            return res.status(400).json({
+                error: 'Perfil no disponible',
+                message: 'Los perfiles personalizados solo están disponibles para usuarios en MongoDB'
+            });
+        }
+
+        const { nombre, apellido, telefono, fecha_nacimiento, foto_perfil_url } = req.body;
+
+        const updateData = {};
+        if (nombre !== undefined) updateData.nombre = nombre;
+        if (apellido !== undefined) updateData.apellido = apellido;
+        if (telefono !== undefined) updateData.telefono = telefono;
+        if (fecha_nacimiento !== undefined) updateData.fecha_nacimiento = fecha_nacimiento;
+        if (foto_perfil_url !== undefined) updateData.foto_perfil_url = foto_perfil_url;
+
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { $set: updateData },
+            { new: true, runValidators: true }
+        ).select('-password');
+
+        if (!user) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+
+        return res.json({
+            message: 'Perfil actualizado exitosamente',
+            profile: {
+                id: user._id,
+                email: user.email,
+                nombre: user.nombre,
+                apellido: user.apellido,
+                documento: user.documento,
+                tipo_documento: user.tipo_documento,
+                telefono: user.telefono,
+                fecha_nacimiento: user.fecha_nacimiento,
+                foto_perfil_url: user.foto_perfil_url
+            }
+        });
+    } catch (error) {
+        console.error('Error in student/me/profile PUT:', error);
+        return res.status(500).json({ error: 'Error al actualizar perfil' });
+    }
+});
+
+/**
+ * PUT /api/student/me/preferences
+ * Update student preferences (tema, idioma, notificaciones)
+ */
+router.put('/me/preferences', async (req, res) => {
+    try {
+        const userId = req.user.userId;
+
+        if (req.user.rol !== 'viewer') {
+            return res.status(400).json({
+                error: 'Preferencias no disponibles',
+                message: 'Las preferencias solo están disponibles para usuarios en MongoDB'
+            });
+        }
+
+        const { tema, idioma, notificaciones } = req.body;
+
+        const updateData = {};
+        if (tema !== undefined) updateData['preferencias.tema'] = tema;
+        if (idioma !== undefined) updateData['preferencias.idioma'] = idioma;
+        if (notificaciones !== undefined) updateData['preferencias.notificaciones'] = notificaciones;
+
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { $set: updateData },
+            { new: true, runValidators: true }
+        ).select('preferencias');
+
+        if (!user) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+
+        return res.json({
+            message: 'Preferencias actualizadas exitosamente',
+            preferencias: user.preferencias
+        });
+    } catch (error) {
+        console.error('Error in student/me/preferences PUT:', error);
+        return res.status(500).json({ error: 'Error al actualizar preferencias' });
     }
 });
 
