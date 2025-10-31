@@ -228,6 +228,16 @@ class EnrollmentRepository {
   }
 
   /**
+   * Find enrollments for a specific student in an institution using academic_mail
+   * Uses ALLOW FILTERING because academic_mail is not part of primary key
+   */
+  async findByInstitutionAndAcademicMail(institutionId, academicMail) {
+    const query = `SELECT * FROM enrollments WHERE institution_id = ? AND academic_mail = ? ALLOW FILTERING`;
+    const result = await executeQuery(query, [institutionId, academicMail], { prepare: true });
+    return result.rows;
+  }
+
+  /**
    * Find a specific enrollment
    */
   async findOne(institutionId, email, careerId) {

@@ -20,6 +20,7 @@ const prospectionRoutes = require('./routes/prospection');
 const admissionRoutes = require('./routes/admission');
 const enrollmentRoutes = require('./routes/enrollment');
 const relationsRoutes = require('./routes/relations');
+const studentRoutes = require('./routes/student');
 const ministerioRoutes = require('./routes/ministerio');
 const workerRoutes = require('./routes/worker');
 
@@ -96,6 +97,7 @@ app.use('/api/enrollment', enrollmentRoutes);
 app.use('/api/relations', relationsRoutes);
 app.use('/api/ministerio', ministerioRoutes);
 app.use('/api/worker', workerRoutes);
+app.use('/api/student', studentRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
