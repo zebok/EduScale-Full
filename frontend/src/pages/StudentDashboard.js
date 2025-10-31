@@ -61,7 +61,8 @@ const StudentDashboard = () => {
         if (activeTab === 'perfil' && user?.rol === 'viewer' && !profile) {
             fetchProfile();
         }
-    }, [activeTab]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeTab, user?.rol]);
 
     const fetchProfile = async () => {
         try {
@@ -137,6 +138,15 @@ const StudentDashboard = () => {
         root.style.setProperty('--sd-secondary', secondary);
         root.style.setProperty('--sd-accent', accent);
     }, [primary, secondary, accent]);
+
+    // Apply theme (light/dark) to body
+    useEffect(() => {
+        if (preferences.tema === 'dark') {
+            document.body.classList.add('dark-theme');
+        } else {
+            document.body.classList.remove('dark-theme');
+        }
+    }, [preferences.tema]);
 
     const firstInitial = (data?.student?.nombre_completo || user?.nombre || 'A')
         .trim()
@@ -269,6 +279,39 @@ const StudentDashboard = () => {
                                     <>
                                         <div className="profile-grid">
                                             <Card title="👤 Información Personal">
+                                                {/* Avatar/Foto de Perfil */}
+                                                <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+                                                    {profileForm.foto_perfil_url ? (
+                                                        <img
+                                                            src={profileForm.foto_perfil_url}
+                                                            alt="Foto de perfil"
+                                                            style={{
+                                                                width: '100px',
+                                                                height: '100px',
+                                                                borderRadius: '50%',
+                                                                objectFit: 'cover',
+                                                                border: '3px solid ' + primary
+                                                            }}
+                                                            onError={(e) => { e.target.style.display = 'none'; }}
+                                                        />
+                                                    ) : (
+                                                        <div style={{
+                                                            width: '100px',
+                                                            height: '100px',
+                                                            borderRadius: '50%',
+                                                            background: primary,
+                                                            color: 'white',
+                                                            display: 'inline-flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontSize: '36px',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                            {firstInitial}
+                                                        </div>
+                                                    )}
+                                                </div>
+
                                                 {!editMode ? (
                                                     <>
                                                         <div className="info-list">
@@ -279,20 +322,75 @@ const StudentDashboard = () => {
                                                             <div className="info-row"><div className="info-key">Teléfono:</div><div className="info-val">{profile.telefono || '-'}</div></div>
                                                             <div className="info-row"><div className="info-key">Fecha Nac.:</div><div className="info-val">{profile.fecha_nacimiento ? new Date(profile.fecha_nacimiento).toLocaleDateString('es-AR') : '-'}</div></div>
                                                         </div>
-                                                        <button className="btn-primary" style={{ marginTop: '12px' }} onClick={() => setEditMode(true)}>✏️ Editar Perfil</button>
+                                                        <button className="btn-primary" style={{ marginTop: '12px', width: '100%' }} onClick={() => setEditMode(true)}>✏️ Editar Perfil</button>
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                                            <input type="text" placeholder="Nombre" value={profileForm.nombre} onChange={(e) => setProfileForm({ ...profileForm, nombre: e.target.value })} style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }} />
-                                                            <input type="text" placeholder="Apellido" value={profileForm.apellido} onChange={(e) => setProfileForm({ ...profileForm, apellido: e.target.value })} style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }} />
-                                                            <input type="tel" placeholder="Teléfono" value={profileForm.telefono} onChange={(e) => setProfileForm({ ...profileForm, telefono: e.target.value })} style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }} />
-                                                            <input type="date" placeholder="Fecha Nacimiento" value={profileForm.fecha_nacimiento} onChange={(e) => setProfileForm({ ...profileForm, fecha_nacimiento: e.target.value })} style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }} />
-                                                            <input type="url" placeholder="URL Foto de Perfil" value={profileForm.foto_perfil_url} onChange={(e) => setProfileForm({ ...profileForm, foto_perfil_url: e.target.value })} style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }} />
+                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                                            <div>
+                                                                <label style={{ display: 'block', marginBottom: '4px', fontWeight: 600, fontSize: '13px' }}>Nombre</label>
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="Nombre"
+                                                                    value={profileForm.nombre}
+                                                                    onChange={(e) => setProfileForm({ ...profileForm, nombre: e.target.value })}
+                                                                    style={{ padding: '10px', border: '1px solid #d1d5db', borderRadius: '6px', width: '100%', fontSize: '14px' }}
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <label style={{ display: 'block', marginBottom: '4px', fontWeight: 600, fontSize: '13px' }}>Apellido</label>
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="Apellido"
+                                                                    value={profileForm.apellido}
+                                                                    onChange={(e) => setProfileForm({ ...profileForm, apellido: e.target.value })}
+                                                                    style={{ padding: '10px', border: '1px solid #d1d5db', borderRadius: '6px', width: '100%', fontSize: '14px' }}
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <label style={{ display: 'block', marginBottom: '4px', fontWeight: 600, fontSize: '13px' }}>Teléfono</label>
+                                                                <input
+                                                                    type="tel"
+                                                                    placeholder="+54 11 1234-5678"
+                                                                    value={profileForm.telefono}
+                                                                    onChange={(e) => setProfileForm({ ...profileForm, telefono: e.target.value })}
+                                                                    style={{ padding: '10px', border: '1px solid #d1d5db', borderRadius: '6px', width: '100%', fontSize: '14px' }}
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <label style={{ display: 'block', marginBottom: '4px', fontWeight: 600, fontSize: '13px' }}>Fecha de Nacimiento</label>
+                                                                <input
+                                                                    type="date"
+                                                                    value={profileForm.fecha_nacimiento}
+                                                                    onChange={(e) => setProfileForm({ ...profileForm, fecha_nacimiento: e.target.value })}
+                                                                    style={{ padding: '10px', border: '1px solid #d1d5db', borderRadius: '6px', width: '100%', fontSize: '14px' }}
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <label style={{ display: 'block', marginBottom: '4px', fontWeight: 600, fontSize: '13px' }}>URL Foto de Perfil</label>
+                                                                <input
+                                                                    type="url"
+                                                                    placeholder="https://ejemplo.com/foto.jpg"
+                                                                    value={profileForm.foto_perfil_url}
+                                                                    onChange={(e) => setProfileForm({ ...profileForm, foto_perfil_url: e.target.value })}
+                                                                    style={{ padding: '10px', border: '1px solid #d1d5db', borderRadius: '6px', width: '100%', fontSize: '14px' }}
+                                                                />
+                                                                <small style={{ color: '#6b7280', fontSize: '12px' }}>Pegá la URL de tu imagen de perfil</small>
+                                                            </div>
                                                         </div>
-                                                        <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-                                                            <button className="btn-primary" onClick={handleProfileUpdate}>💾 Guardar</button>
-                                                            <button className="btn-danger" onClick={() => setEditMode(false)}>Cancelar</button>
+                                                        <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
+                                                            <button className="btn-primary" style={{ flex: 1 }} onClick={handleProfileUpdate}>💾 Guardar Cambios</button>
+                                                            <button className="btn-danger" style={{ flex: 1 }} onClick={() => {
+                                                                setEditMode(false);
+                                                                // Restore original values
+                                                                setProfileForm({
+                                                                    nombre: profile.nombre || '',
+                                                                    apellido: profile.apellido || '',
+                                                                    telefono: profile.telefono || '',
+                                                                    fecha_nacimiento: profile.fecha_nacimiento ? profile.fecha_nacimiento.split('T')[0] : '',
+                                                                    foto_perfil_url: profile.foto_perfil_url || ''
+                                                                });
+                                                            }}>❌ Cancelar</button>
                                                         </div>
                                                     </>
                                                 )}
@@ -341,18 +439,6 @@ const StudentDashboard = () => {
                                                             />
                                                             <span>Recibir notificaciones por email</span>
                                                         </label>
-                                                    </div>
-
-                                                    <div>
-                                                        <div style={{ fontWeight: 600, marginBottom: '6px' }}>Idioma</div>
-                                                        <select
-                                                            value={preferences.idioma}
-                                                            onChange={(e) => handlePreferencesUpdate({ ...preferences, idioma: e.target.value })}
-                                                            style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px', width: '100%' }}
-                                                        >
-                                                            <option value="es">Español</option>
-                                                            <option value="en">English</option>
-                                                        </select>
                                                     </div>
                                                 </div>
                                             </Card>

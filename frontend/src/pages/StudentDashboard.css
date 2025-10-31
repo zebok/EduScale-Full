@@ -13,6 +13,48 @@
     --sd-muted: #64748b;
 }
 
+/* Dark Theme */
+body.dark-theme {
+    --sd-card-bg: #1e293b;
+    --sd-card-border: #334155;
+    --sd-text: #f1f5f9;
+    --sd-muted: #94a3b8;
+}
+
+body.dark-theme .student-panel {
+    background: var(--sd-card-bg);
+    color: var(--sd-text);
+}
+
+body.dark-theme .section-card {
+    background: #334155;
+    border-color: #475569;
+}
+
+body.dark-theme .info-key {
+    color: var(--sd-muted);
+}
+
+body.dark-theme .info-val {
+    color: var(--sd-text);
+}
+
+body.dark-theme input,
+body.dark-theme select {
+    background: #0f172a !important;
+    color: var(--sd-text) !important;
+    border-color: #475569 !important;
+}
+
+body.dark-theme .welcome-card {
+    background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%);
+}
+
+body.dark-theme .tile {
+    background: #334155;
+    border-color: #475569;
+}
+
 .student-layout {
     min-height: 100vh;
     background: linear-gradient(160deg, var(--sd-bg-start), var(--sd-bg-end));
