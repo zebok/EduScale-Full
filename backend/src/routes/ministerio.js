@@ -37,6 +37,7 @@ router.get('/universidades', authMiddleware, requireSuperAdmin, async (req, res)
                 'contact.email': 1,
                 'contact.phone': 1,
                 'contact.website': 1,
+                careers: 1,
                 domain: 1,
                 createdAt: 1,
                 updatedAt: 1
@@ -134,13 +135,19 @@ router.get('/estadisticas', authMiddleware, requireSuperAdmin, async (req, res) 
         const stats = {
             total_universidades: universidades.length,
             universidades_activas: universidades.filter(u => u.status === 'active').length,
-            // Normalizamos el campo `institution.type` para admitir seeds con "Universidad Pública/Privada"
+            // Normalizamos el campo `institution.type` para admitir seeds con "Universidad Pública/Privada" (con acentos)
             universidades_publicas: universidades.filter(u => {
-                const t = (u.institution?.type || '').toString().toLowerCase();
+                const t = (u.institution?.type || '')
+                    .toString()
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                    .toLowerCase();
                 return t.includes('publica');
             }).length,
             universidades_privadas: universidades.filter(u => {
-                const t = (u.institution?.type || '').toString().toLowerCase();
+                const t = (u.institution?.type || '')
+                    .toString()
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                    .toLowerCase();
                 return t.includes('privada');
             }).length,
             total_carreras: universidades.reduce((sum, u) => sum + (u.careers?.length || 0), 0),

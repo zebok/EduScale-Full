@@ -73,7 +73,11 @@ function MinisterioDashboard() {
     };
 
     const getTypeBadge = (type) => {
-        const t = (type || '').toString().toLowerCase();
+        // Normaliza acentos para que "Pública"/"Privada" coincidan correctamente
+        const t = (type || '')
+            .toString()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase();
         if (t.includes('publica')) return '🏛️ Pública';
         if (t.includes('privada')) return '🏢 Privada';
         return type;

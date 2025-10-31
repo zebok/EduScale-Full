@@ -52,11 +52,25 @@
     align-items: flex-end;
 }
 
-.user-name { font-weight: 600; color: #111827; }
+.user-name {
+    font-weight: 600;
+    color: #111827;
+}
 
-.user-role { font-size: 0.85rem; color: #6b7280; }
+.user-role {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
 
-.logout-button { background: #ef4444; color: #fff; border: 1px solid rgba(0,0,0,0.05); padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
+.logout-button {
+    background: #ef4444;
+    color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
 
 /* Stats Section */
 .stats-section {
@@ -65,7 +79,11 @@
     padding: 0 2rem;
 }
 
-.stats-section h2 { color: #111827; margin-bottom: 1.5rem; font-size: 1.75rem; }
+.stats-section h2 {
+    color: #111827;
+    margin-bottom: 1.5rem;
+    font-size: 1.75rem;
+}
 
 .stats-grid {
     display: grid;
@@ -74,14 +92,31 @@
     margin-bottom: 2rem;
 }
 
-.stat-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 1rem; display:flex; align-items:center; gap: 0.75rem; }
+.stat-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
 
 .stat-icon {
     font-size: 2.5rem;
 }
 
-.stat-content h3 { margin: 0; font-size: 1.5rem; color: #111827; }
-.stat-content p { margin: 0.25rem 0 0 0; color: #6b7280; font-size: 0.9rem; }
+.stat-content h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #111827;
+}
+
+.stat-content p {
+    margin: 0.25rem 0 0 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
 
 /* Universidades Section */
 .universidades-section {
@@ -97,9 +132,21 @@
     margin-bottom: 1.5rem;
 }
 
-.section-header h2 { color: #111827; font-size: 1.5rem; margin: 0; }
+.section-header h2 {
+    color: #111827;
+    font-size: 1.5rem;
+    margin: 0;
+}
 
-.refresh-button { background: #fff; color: #111827; border: 1px solid #e5e7eb; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight:600; }
+.refresh-button {
+    background: #fff;
+    color: #111827;
+    border: 1px solid #e5e7eb;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
 
 .error-message {
     background: #fff3cd;
@@ -111,15 +158,26 @@
 }
 
 /* Table */
-.table-container { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; }
-.table-container.minimal { box-shadow: none; }
+.table-container {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table-container.minimal {
+    box-shadow: none;
+}
 
 .universidades-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.universidades-table thead { background: #f9fafb; color: #374151; }
+.universidades-table thead {
+    background: #f9fafb;
+    color: #374151;
+}
 
 .universidades-table th {
     padding: 1rem;
@@ -133,7 +191,9 @@
     transition: background-color 0.2s ease;
 }
 
-.universidades-table tbody tr:hover { background-color: #f9fafb; }
+.universidades-table tbody tr:hover {
+    background-color: #f9fafb;
+}
 
 .universidades-table td {
     padding: 1rem;
@@ -146,9 +206,14 @@
     gap: 0.25rem;
 }
 
-.uni-name strong { color: #111827; }
+.uni-name strong {
+    color: #111827;
+}
 
-.uni-short { color: #6b7280; font-size: 0.85rem; }
+.uni-short {
+    color: #6b7280;
+    font-size: 0.85rem;
+}
 
 .badge {
     display: inline-block;
@@ -158,7 +223,10 @@
     font-weight: 600;
 }
 
-.type-badge { background: #eef2f7; color: #374151; }
+.type-badge {
+    background: #eef2f7;
+    color: #374151;
+}
 
 .status-badge {
     font-weight: 500;
